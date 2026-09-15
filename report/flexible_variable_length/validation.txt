@@ -1,0 +1,10 @@
+Validation environment: MATLAB R2026a, macOS
+Command: addpath('matlab'); test_flexible_variable_length;
+
+PASS static equilibrium and tension
+PASS conservative energy and horizontal momentum
+PASS hoisting, energy/work, nonlinear swing identity, convergence
+Demo: min T 48.161531 N, max extension 0.004978 m, max swing 6.420884 deg
+Demo max energy error 6.431e-09 J; refined state difference 3.696e-09
+
+Numerical consistency checks only; no experimental or full ALE-ANCF validation.
