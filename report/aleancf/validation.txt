@@ -1,0 +1,28 @@
+Environment: MATLAB R2026a, macOS
+Commands: addpath('matlab'); test_aleancf; tower_crane_aleancf;
+
+PASS fixed-material velocity/acceleration derivatives
+PASS moving-mesh stationary-material patch and fixed-length ANCF limit
+PASS axial/bending energy gradients and consistent distributed mass
+PASS distributed-weight static equilibrium
+PASS fixed-domain conservative energy: maximum drift 1.107e-11 J
+PASS complete 12 s hoisting case and positive sampled axial force
+PASS time refinement: maximum chord-angle difference 1.412e-11 rad
+PASS 3 versus 6 element comparison: maximum chord-angle difference 1.376e-07 rad
+PASS 6 versus 9 element comparison: maximum chord-angle difference 2.367e-08 rad
+
+Default 3-element demonstration:
+Maximum absolute chord angle: 4.131286 deg
+Minimum sampled axial constitutive force: 48.410404 N
+
+Additional optimization checks:
+PASS first-order mass matrix versus direct mechanical assembly at 4 times
+PASS cached event strain equivalence at 20 changing-length states
+MATLAB Code Analyzer: two sparse-indexing performance advisories (SPRIX);
+no other analyzer messages in the checked implementation.
+
+Scope: internal numerical consistency and chord-angle convergence only.
+No experimental validation, no reproduction of the paper's complete tower model,
+and no variable-domain boundary energy-flux audit. Axial force minima are
+sampled in space/time; local curvature and high-frequency force convergence
+are not established by the chord-angle mesh comparison.

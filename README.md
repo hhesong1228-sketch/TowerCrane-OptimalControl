@@ -46,3 +46,18 @@ out = tower_crane_flexible_variable_length;
 - [MATLAB 入口](matlab/tower_crane_flexible_variable_length.m)
 - [仿真图](report/flexible_variable_length/simulation.png)
 - [验证记录](report/flexible_variable_length/validation.txt)
+
+## 二维 ALE-ANCF 变长度柔性绳
+
+新增分布质量、轴向/弯曲弹性和材料流动惯性。采用给定材料坐标的固定数量移动网格；吊点继续使用集总竖向柔性支撑。
+
+```matlab
+addpath('matlab');
+test_aleancf;
+out = tower_crane_aleancf;
+```
+
+- [ALE-ANCF 推导、实现范围和验证说明](report/aleancf_model_zh.md)
+- [MATLAB 入口](matlab/tower_crane_aleancf.m)
+- [ALE-ANCF 仿真图](report/aleancf/simulation.png)
+- [ALE-ANCF 验证记录](report/aleancf/validation.txt)
