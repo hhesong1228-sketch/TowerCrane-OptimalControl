@@ -21,8 +21,9 @@ if saveResults
     writetable(data,fullfile(folder,'simulation.csv'));
 end
 if makePlots
-    fig=figure('Color','w','Name','2D flexible variable-length crane');
-    tiledlayout(3,2);
+    fig=figure('Color','w','Name','2D flexible variable-length crane', ...
+        'Position',[100 100 1100 850]);
+    tiledlayout(3,2,'Padding','loose','TileSpacing','loose');
     nexttile; plot(out.t,[out.z(:,1),out.z(:,3)]); grid on;
     xlabel('Time [s]'); ylabel('Horizontal position [m]'); legend('Trolley','Payload');
     nexttile; plot(out.t,out.theta*180/pi); grid on;
@@ -34,7 +35,7 @@ if makePlots
     nexttile; plot(out.t,out.tension); grid on;
     xlabel('Time [s]'); ylabel('Tension [N]');
     nexttile; plot(out.t,out.z(:,2)*1000); grid on;
-    xlabel('Time [s]'); ylabel('Support displacement, down [mm]');
+    xlabel('Time [s]'); ylabel('Support deflection [mm]');
     if saveResults
         exportgraphics(fig,fullfile(folder,'simulation.png'),'Resolution',160);
     end
