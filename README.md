@@ -61,3 +61,14 @@ out = tower_crane_aleancf;
 - [MATLAB 入口](matlab/tower_crane_aleancf.m)
 - [ALE-ANCF 仿真图](report/aleancf/simulation.png)
 - [ALE-ANCF 验证记录](report/aleancf/validation.txt)
+
+## 模型说明书 / モデル説明書
+
+- [中文版：模型说明书](report/manuals/model_manual_zh.md)
+- [日本語版：モデル説明書](report/manuals/model_manual_ja.md)
+
+两版对应当前二维 ALE-ANCF 实现，包含参数、运行步骤、理论公式、输出解释和适用范围。
+両版とも現行の二次元 ALE-ANCF 実装を対象とし、パラメータ、実行手順、理論式、出力の解釈および適用範囲を説明します。
+
+- [中文版 PDF](output/pdf/model_manual_zh.pdf)
+- [日本語版 PDF](output/pdf/model_manual_ja.pdf)
