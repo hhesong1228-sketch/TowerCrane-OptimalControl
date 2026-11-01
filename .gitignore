@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Intermediate PDF renderings and layout checks
+/tmp/pdfs/continuum/

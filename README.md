@@ -72,3 +72,29 @@ out = tower_crane_aleancf;
 
 - [中文版 PDF](output/pdf/model_manual_zh.pdf)
 - [日本語版 PDF](output/pdf/model_manual_ja.pdf)
+
+## 连续体塔身—起重臂 + ANCF / ALE-ANCF 吊索
+
+塔身与臂架采用 Euler–Bernoulli 连续梁假设模态法，包含塔顶平移、转角和移动小车的惯性耦合。吊索与吊物通过位置约束连接，使用加速度级鞍点系统与约束稳定化求解。底座固支，二维平面演示模型。
+
+```matlab
+addpath('matlab');
+out = tower_crane_continuum_ancf;
+test_continuum_ancf;
+```
+
+- [完整中文建模与仿真说明书](report/continuum/model_manual_zh.md)
+- [入口代码](matlab/tower_crane_continuum_ancf.m)
+- [时程图](report/continuum/simulation.png)
+- [几何快照](report/continuum/geometry.png)
+- [验证记录](report/continuum/validation.txt)
+
+默认各保留两阶梁模态和三个绳单元，支持固定索长与规定材料坐标的收放绳。示例参数未经过真实塔吊标定。
+
+### 连续体耦合模型双语 PDF
+
+- [中文版 PDF](output/pdf/continuum_ancf_manual_zh.pdf)
+- [日本語版 PDF](output/pdf/continuum_ancf_manual_ja.pdf)
+- [日本語版 Markdown](report/continuum/model_manual_ja.md)
+
+两版包含相同的模型公式、参数、运行方法、结果图与精度限制。PDF 生成脚本：`scripts/build_continuum_manual_pdfs.py`。
