@@ -1,0 +1,1 @@
+4-mode regression: angle 9.972e-13 rad, tower 3.221e-13 m, jib 5.996e-13 m

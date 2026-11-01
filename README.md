@@ -98,3 +98,47 @@ test_continuum_ancf;
 - [日本語版 Markdown](report/continuum/model_manual_ja.md)
 
 两版包含相同的模型公式、参数、运行方法、结果图与精度限制。PDF 生成脚本：`scripts/build_continuum_manual_pdfs.py`。
+
+### 修正前的三阶与四阶梁模态比较（历史记录）
+
+- [静态解析核对及完整动态分析](report/continuum/modal_convergence/analysis_zh.md)
+- [时程对比图](report/continuum/modal_convergence/response_comparison.png)
+- [复现脚本](matlab/analyze_continuum_modal_convergence.m)
+
+固定六段吊索，在完整 10 s 工况下比较每根梁三阶与四阶模态。摆角对本次加密较不敏感，但臂端静挠度和结构振动尚不能认定收敛；具体误差及判定范围见分析报告。
+
+## 修正前的结构模态收敛与独立静挠度验证（历史记录）
+
+以下链接仅保留修正前的历史结果，不作为现行模型结论。
+
+- [验证说明与判据](report/continuum/structure_validation/verification_zh.md)
+- [独立静挠度结果](report/continuum/structure_validation/static_validation.csv)
+- [动态模态加密结果](report/continuum/structure_validation/dynamic_validation.csv)
+- [静态全场对照](report/continuum/structure_validation/independent_static_fields.png)
+- [响应和误差收敛图](report/continuum/structure_validation/convergence.png)
+
+新增稳定的 1–16 阶连续梁振型计算；默认模态数不变。动态比较 4、6、8、12 阶，静态对照至 16 阶；全部固定六段吊索。验证完成不代表所有量均达到 1% 精度，详见各量误差与判据。
+
+**历史问题：** 修正前塔顶斜率与吊臂根部斜率反号，独立静态对照未通过。2026-11-02 已统一修正运动学、惯性、重力及输出，旧记录保留用于追溯。
+
+## 刚接符号修正后的重新验证（2026-11-02）
+
+当前程序使用正号 `rJ,Y = ξ bη + ψ(ξ)ζ`。重新验证入口：
+
+```matlab
+addpath('matlab');
+audit_continuum_connection;
+test_continuum_high_modes;
+test_continuum_ancf;
+result=validate_continuum_structure;
+plot_continuum_static_validation;
+```
+
+- [修正与重新验证报告](report/continuum/structure_validation_corrected/verification_zh.md)
+- [独立静态对照](report/continuum/structure_validation_corrected/static_validation.csv)
+- [刚接几何检查](report/continuum/structure_validation_corrected/connection_sign_audit.csv)
+- [动态模态比较](report/continuum/structure_validation_corrected/dynamic_validation.csv)
+- [完整回归记录](report/continuum/structure_validation_corrected/regression/validation.txt)
+- [各项误差随模态阶数变化曲线（7 页 PDF）](output/pdf/continuum_error_convergence_zh.pdf)
+
+旧默认算例和说明书归档于 `report/continuum/legacy_before_sign_fix/`。符号正确与模态精度达标是不同检查项；16 阶臂端静挠度仍有约 1.6–1.7% 截断误差。

@@ -1,8 +1,9 @@
 function test_continuum_ancf()
 % Independent invariants and refinement checks for the hybrid model.
-folder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'report','continuum');
+folder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'report','continuum','structure_validation_corrected','regression');
 if ~exist(folder,'dir'), mkdir(folder); end
 diary(fullfile(folder,'validation.txt')); cleanup=onCleanup(@()diary('off')); %#ok<NASGU>
+audit_continuum_connection(); % Independent physical check guards against sign regressions.
 fprintf('Continuous-beam / ANCF validation %s\n',datestr(now,30));
 p=continuum.parameters(); p.theta0=0; p.L1=p.L0; p.x1=p.x0;
 c=continuum.setup(p); z=continuum.initial_state(p,c); q=z(1:c.n); v=z(c.n+1:end);

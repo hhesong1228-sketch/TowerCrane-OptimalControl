@@ -1,0 +1,28 @@
+Modal study: 0-10 s, 6 rope elements, RelTol 2.0e-08, AbsTol 1.0e-10
+    modes     tower_m     tower_exact_m    tower_error_m    tower_error_pct     jib_m     jib_exact_m    jib_error_m    jib_error_pct
+    _____    _________    _____________    _____________    _______________    _______    ___________    ___________    _____________
+
+      1        -0.0755      -0.084758         0.009258           10.923        0.14416      0.19208       -0.047919        24.947    
+      2      -0.082177      -0.084758        0.0025813           3.0454        0.16695      0.19208       -0.025133        13.084    
+      3      -0.083575      -0.084758        0.0011832           1.3959        0.17505      0.19208       -0.017025        8.8634    
+      4      -0.084085      -0.084758       0.00067308          0.79412        0.17925      0.19208       -0.012834        6.6815    
+
+Running 3 modes per beam...
+Completed 3 modes in 212.9 s; constraint 6.071e-13 m, min axial 48.45291 N
+Running 4 modes per beam...
+Completed 4 modes in 208.9 s; constraint 5.835e-13 m, min axial 48.42983 N
+                quantity                 unit      max_abs_difference    rms_difference    four_mode_peak_abs    peak_relative_pct    L2_relative_pct
+    ________________________________    _______    __________________    ______________    __________________    _________________    _______________
+
+    {'tower_total'                 }    {'m'  }        0.00069204          0.00055379           0.094257              0.73421             0.60883    
+    {'jib_total'                   }    {'m'  }         0.0048671           0.0045137            0.20675               2.3542              2.2757    
+    {'tower_change_from_initial'   }    {'m'  }        0.00018196          6.9413e-05           0.010171               1.7889             0.89361    
+    {'jib_change_from_initial'     }    {'m'  }        0.00067621           0.0003782             0.0275               2.4589               1.746    
+    {'tower_vibration_about_static'}    {'m'  }        0.00013777          5.0629e-05          0.0016407                8.397              9.5535    
+    {'jib_vibration_about_static'  }    {'m'  }        0.00022112          8.3039e-05          0.0019485               11.348              12.915    
+    {'payload_angle'               }    {'rad'}        0.00012922          4.1084e-05           0.036961               0.3496             0.26103    
+    {'support_force_x'             }    {'N'  }         0.0054687           0.0019645             1.8738              0.29184             0.24758    
+    {'support_force_y'             }    {'N'  }          0.095266            0.036957             51.647              0.18446            0.072862    
+    {'trolley_drive'               }    {'N'  }            0.6445              0.3926             22.469               2.8684              2.1186    
+
+Study complete. Finite 3/4 comparison does not prove asymptotic convergence.

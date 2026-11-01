@@ -23,6 +23,6 @@ a.energy=0.5*v(1:c.ns).'*c.M*v(1:c.ns)+0.5*p.mT*norm(J*v(1:c.ns))^2 ...
  +kinetic+0.5*p.mP*norm(v(c.ip))^2+0.5*q(1:c.ns).'*c.K*q(1:c.ns) ...
  +U-c.Fg.'*q(1:c.ns)-p.mT*p.g*r(2)-Fg.'*q(c.ie)-p.mP*p.g*q(c.ip(2));
 a.L=L; a.axialForceMin=p.EA*emin; a.aleForceNorm=norm(anorm);
-a.topX=c.top*q(c.it); a.tipY=-p.B*c.slope*q(c.it)+continuum.modes(p.B,p.B,c.nj)*q(c.ij);
+a.topX=c.top*q(c.it); a.tipY=p.B*c.slope*q(c.it)+continuum.modes(p.B,p.B,c.nj)*q(c.ij);
 a.theta=atan2(q(c.ip(1))-r(1),q(c.ip(2))-r(2)); a.suspension=r;
 end

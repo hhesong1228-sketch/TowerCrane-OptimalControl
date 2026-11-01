@@ -1,0 +1,1 @@
+PASS 16-mode orthogonality: mass 7.773e-15, stiffness 7.487e-15; clamped base and tip normalization

@@ -30,11 +30,11 @@ styles={
 # Components are used for long column vectors to retain readable font sizes.
 EQ=[
  ['w<sub>T</sub>(z,t) = Σ<sub>i</sub> φ<sub>i</sub>(z) η<sub>i</sub>(t)', 'w<sub>J</sub>(ξ,t) = Σ<sub>j</sub> ψ<sub>j</sub>(ξ) ζ<sub>j</sub>(t)'],
- ['r<sub>J,X</sub>(ξ) = ξ + aη', 'r<sub>J,Y</sub>(ξ) = −ξbη + ψ(ξ)ζ'],
+ ['r<sub>J,X</sub>(ξ) = ξ + aη', 'r<sub>J,Y</sub>(ξ) = ξbη + ψ(ξ)ζ'],
  ['F<sub>i</sub>(z) = cosh(β<sub>i</sub>z/H) − cos(β<sub>i</sub>z/H)', '− σ<sub>i</sub>[sinh(β<sub>i</sub>z/H) − sin(β<sub>i</sub>z/H)]', 'φ<sub>i</sub>(z) = F<sub>i</sub>(z) / F<sub>i</sub>(H)', 'σ<sub>i</sub> = (cosh β<sub>i</sub> + cos β<sub>i</sub>) / (sinh β<sub>i</sub> + sin β<sub>i</sub>)'],
  ['T<sub>T</sub> = ½ ∫<sub>0</sub><super>H</super> μ<sub>T</sub> ẇ<sub>T</sub><super>2</super> dz', 'T<sub>J</sub> = ½ ∫<sub>0</sub><super>B</super> μ<sub>J</sub> ṙ<sub>J</sub><super>T</super>ṙ<sub>J</sub> dξ', 'U<sub>s</sub> = ½ ∫<sub>0</sub><super>H</super> EI<sub>T</sub>(w″<sub>T</sub>)<super>2</super> dz + ½ ∫<sub>0</sub><super>B</super> EI<sub>J</sub>(w″<sub>J</sub>)<super>2</super> dξ'],
  ['J<sub>A</sub> = ∂r<sub>A</sub>/∂q<sub>s</sub>', 'ṙ<sub>A</sub> = J<sub>A</sub>q̇<sub>s</sub>,     r̈<sub>A</sub> = J<sub>A</sub>q̈<sub>s</sub> + h<sub>A</sub>'],
- ['h<sub>A,X</sub> = 0', 'h<sub>A,Y</sub> = 2[−bη̇ + ψ′(x)ζ̇]ẋ + ψ″(x)ζ ẋ<super>2</super>'],
+ ['h<sub>A,X</sub> = 0', 'h<sub>A,Y</sub> = 2[bη̇ + ψ′(x)ζ̇]ẋ + ψ″(x)ζ ẋ<super>2</super>'],
  ['r = N<sub>e</sub>e<sub>e</sub>', 'N<sub>e</sub> = [H<sub>1</sub>I<sub>2</sub>, ℓH<sub>2</sub>I<sub>2</sub>, H<sub>3</sub>I<sub>2</sub>, ℓH<sub>4</sub>I<sub>2</sub>]'],
  ['ε = ‖r<sub>s</sub>‖ − 1', 'k<sub>m</sub> = (r<sub>s,X</sub>r<sub>ss,Y</sub> − r<sub>s,Y</sub>r<sub>ss,X</sub>) / (r<sub>s</sub><super>T</super>r<sub>s</sub>)', 'U<sub>c</sub> = ½ ∫ (EAε<super>2</super> + EI<sub>c</sub>k<sub>m</sub><super>2</super>) ds'],
  ['v<sub>m</sub> = Nė + N<sub>t</sub>e', 'a<sub>m</sub> = Në + 2N<sub>t</sub>ė + N<sub>tt</sub>e'],
@@ -59,7 +59,7 @@ def para(s,style='body'): return Paragraph(inline(s),styles[style])
 def footer(canvas,doc):
  canvas.setStrokeColor(colors.HexColor('#D9E1E7')); canvas.line(45,40,550,40)
  canvas.setFont('CJK',8);canvas.setFillColor(GREY)
- canvas.drawString(45,27,'CONTINUUM + ANCF  |  2026-10-28')
+ canvas.drawString(45,27,'CONTINUUM + ANCF  |  2026-11-02')
  canvas.drawRightString(550,27,str(doc.page))
 
 def build(lang):
@@ -72,7 +72,7 @@ def build(lang):
  lines=text.splitlines(); story=[]
  title='连续体塔身与起重臂\nANCF 吊索耦合模型' if lang=='zh' else '連続体タワー・ジブと\nANCF 吊りロープの連成モデル'
  titleStyle=ParagraphStyle('title',fontName='CJK',fontSize=25,leading=39,textColor=NAVY,wordWrap='CJK')
- story += [Spacer(1,55),Paragraph(title.replace('\n','<br/>'),titleStyle),Spacer(1,16),para('建模、仿真与验证说明书' if lang=='zh' else 'モデル化・シミュレーション・検証説明書','h1'),para('中文版  |  2026-10-28' if lang=='zh' else '日本語版  |  2026-10-28'),Spacer(1,20)]
+ story += [Spacer(1,55),Paragraph(title.replace('\n','<br/>'),titleStyle),Spacer(1,16),para('建模、仿真与验证说明书' if lang=='zh' else 'モデル化・シミュレーション・検証説明書','h1'),para('中文版  |  2026-11-02' if lang=='zh' else '日本語版  |  2026-11-02'),Spacer(1,20)]
  brief='Euler-Bernoulli 连续梁 · 假设模态法 · ANCF / ALE-ANCF · 约束动力学' if lang=='zh' else 'Euler-Bernoulli 連続はり · 仮定モード法 · ANCF / ALE-ANCF · 拘束動力学'
  story += [para(brief),Spacer(1,20)]
  for line in lines:
@@ -118,7 +118,7 @@ def build(lang):
  doc=SimpleDocTemplate(str(dest),pagesize=(595.28,841.89),rightMargin=45,leftMargin=45,topMargin=44,bottomMargin=55,title=title.replace('\n',' '),author='TowerCrane-OptimalControl',pageCompression=1)
  doc.build(story,onFirstPage=footer,onLaterPages=footer)
  reader=PdfReader(dest);txt='\n'.join(p.extract_text() for p in reader.pages)
- assert len(reader.pages)>5 and '48.4843' in txt and '9.365' in txt
+ assert len(reader.pages)>5 and '2026-11-02' in txt and '1.63' in txt
  (ROOT/f'tmp/pdfs/continuum/extracted_{lang}.txt').write_text(txt)
  print(dest,len(reader.pages),'pages')
 for lang in ['zh','ja']:build(lang)

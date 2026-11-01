@@ -1,0 +1,10 @@
+Continuous-beam / ANCF validation 20261028T095420
+PASS static acceleration 4.323e-09, SPD mass, independent constraints
+PASS isolated tower first frequency 2.85565194 Hz
+PASS moving attachment velocity and convective acceleration
+Coupled first six frequencies (Hz): 0.3518812 1.0669485 2.7683818 5.6120074 7.5514795 11.2098846
+PASS fixed-domain energy drift 8.313e-12 J; constraint 4.485e-14 m
+PASS trolley + hoist: min axial 48.66648 N, constraint 3.070e-12 m, dynamics 2.842e-14
+PASS angle sensitivity: time 1.699e-11 rad; rope 3/6 4.900e-08 rad; modes 2/3 1.614e-04 rad
+Tower displacement mode sensitivity 1.740e-03 m; jib tip 9.365e-03 m
+ALL CHECKS PASSED. Sensitivity checks do not establish local stress convergence.

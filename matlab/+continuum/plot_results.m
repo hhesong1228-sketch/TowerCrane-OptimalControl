@@ -9,13 +9,14 @@ nexttile; plot(t,[out.L,out.z(:,out.c.ix)]); grid on; xlabel('Time (s)'); ylabel
 nexttile; plot(t,out.axialForceMin); grid on; xlabel('Time (s)'); ylabel('Min. sampled axial force (N)');
 nexttile; plot(t,out.lambda(:,1:2)); grid on; xlabel('Time (s)'); ylabel('Cable force on suspension (N)'); legend('Horizontal','Downward');
 nexttile; semilogy(t,max(out.constraint,1e-16)); grid on; xlabel('Time (s)'); ylabel('Constraint error (m)');
+continuum.light_figure(f);
 exportgraphics(f,fullfile(folder,'simulation.png'),'Resolution',160); close(f);
 f=figure('Visible','off','Color','w'); hold on; c=out.c; p=out.p;
 z=linspace(0,p.H,100)'; x=linspace(0,p.B,100)';
 for k=unique(round(linspace(1,numel(t),5)))
  q=out.z(k,1:c.n).';
  plot(continuum.modes(z,p.H,c.nt)*q(c.it),p.H-z,'Color',[.6 .6 .6]);
- plot(x+c.top*q(c.it),-x*(c.slope*q(c.it))+continuum.modes(x,p.B,c.nj)*q(c.ij),'Color',[.4 .4 .4]);
+ plot(x+c.top*q(c.it),x*(c.slope*q(c.it))+continuum.modes(x,p.B,c.nj)*q(c.ij),'Color',[.4 .4 .4]);
  rope=[];
  for e=1:p.nElem
   for u=linspace(0,1,15)
@@ -27,5 +28,6 @@ for k=unique(round(linspace(1,numel(t),5)))
 end
 set(gca,'YDir','reverse'); axis equal; grid on; xlabel('x (m)'); ylabel('y downward from tower top (m)');
 title('Five snapshots: true displacement scale');
+continuum.light_figure(f);
 exportgraphics(f,fullfile(folder,'geometry.png'),'Resolution',160); close(f);
 end

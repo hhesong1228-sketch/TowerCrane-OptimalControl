@@ -1,0 +1,11 @@
+    modes    computed_tower_x_m    physical_tower_x_m    signed_static_error_pct    mast_slope    computed_jib_root_slope    normalized_tangent_dot    angle_deviation_deg
+    _____    __________________    __________________    _______________________    __________    _______________________    ______________________    ___________________
+
+      2          -0.082177              0.084758                 196.95             -0.033962            0.033962                  -0.067845                 3.8902       
+      4          -0.084085              0.084758                 199.21             -0.038107            0.038107                  -0.076104                 4.3647       
+      8          -0.084588              0.084758                  199.8             -0.040235            0.040235                   -0.08034                 4.6081       
+     12          -0.084683              0.084758                 199.91             -0.040949            0.040949                   -0.08176                 4.6898       
+     16          -0.084716              0.084758                 199.95             -0.041306            0.041306                  -0.082471                 4.7306       
+
+FAIL physical rigid-joint sign: jib slope should equal mast slope under declared coordinates.
+This audit intentionally reports failure without modifying the model under study.
