@@ -1,0 +1,15 @@
+{
+  "language": "ja",
+  "source": "report/continuum/simulation.mat",
+  "sha256": "0f8d19298d0aa06b6634e077976578610572f7cbc6f117fa86f9b16fde2c8c64",
+  "duration_s": 10,
+  "fps": 30,
+  "resolution": [
+    1600,
+    900
+  ],
+  "samples": 501,
+  "max_constraint_m": 6.199485369506874e-12,
+  "geometry_checks": "tower top, jib tip, cable suspension and payload endpoints match MATLAB output",
+  "magnification": "main structural increments 5x; rope horizontal offset 5x; inset 10x"
+}
