@@ -1,6 +1,6 @@
 function result=validate_continuum_structure()
 % Independent closed-form statics and fixed-cable structural modal refinement.
-root=fileparts(fileparts(mfilename('fullpath')));
+root=fileparts(fileparts(fileparts(mfilename('fullpath'))));
 folder=fullfile(root,'report','continuum','structure_validation_corrected');
 if ~exist(folder,'dir'),mkdir(folder);end
 diary(fullfile(folder,'run_log.txt')); finish=onCleanup(@()diary('off')); %#ok<NASGU>

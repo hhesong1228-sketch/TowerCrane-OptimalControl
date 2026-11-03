@@ -12,7 +12,7 @@ with (F/'physical_static_validation.csv').open('w') as f:
   ut=float(r['tower_m']);ue=-float(r['tower_exact_m']);rt=float(r['rotation_rad']);re=-float(r['rotation_exact_rad'])
   w.writerow([r['case_id'],r['modes'],ut,ue,100*abs(ut-ue)/abs(ue),rt,re,100*abs(rt-re)/abs(re),r['jib_m'],r['jib_exact_m'],r['jib_error_pct']])
 lines=['# 结构模态截断收敛与独立静挠度验证','',
-'验证日期：2026-11-02。对应 `matlab/validate_continuum_structure.m`。原有 3/4 阶研究保留在 `report/continuum/modal_convergence/`。本次输出单独存放，默认仿真参数仍为每根梁两阶。','',
+'验证日期：2026-11-02。对应 `matlab/analysis/validate_continuum_structure.m`。原有 3/4 阶研究保留在 `report/continuum/modal_convergence/`。本次输出单独存放，默认仿真参数仍为每根梁两阶。','',
 '**重要结论：独立物理静态/刚接运动学核查未通过。现有程序把塔顶斜率与臂根斜率设成反号，违背声明的坐标系下的刚接条件。下面的模态收敛数据描述现有方程的离散行为，不表示原物理模型已经验证正确。**','',
 '## 1. 验证范围与判据','',
 '两项验证均针对现有二维、底座固支、线性结构运动学模型。这里的解析解用于检验该数学模型的空间离散误差，不等同于真实塔吊实验验证。',
@@ -59,7 +59,7 @@ lines+=['',f"最后一组 8→12 阶比较中，{len(last)-len(failed)}/{len(las
 '应统一修正 `point.m` 的臂根转角、相应雅可比和对流加速度，`setup.m` 的臂架绝对运动学，以及 `assemble.m` / `plot_results.m` 中的臂端位置；随后重新生成静态和动态验证。仅改变报告里的正负号不能修复动力学耦合。本次保留被验证模型的物理方程，以避免将修正前后的数据混为一组。','',
 '## 6. 结论与复现','',
 '独立核查首先暴露了上述连接方向错误，修正前不应将该模型用于物理预测。数值验证已经完成，但“完成验证”不等于“所有量已收敛”。总位移、局部振动与反力应按各自判据分别报告，不能用吊载摆角差小代替结构收敛结论。特别是静态臂端挠度，即便 16 阶仍有约 1.6–1.7% 的解析误差，当前纯未加载悬臂模态对塔顶端弯矩的响应效率较低。在修正刚接符号并重跑后，若要求严格的 1% 结构挠度精度，优先考虑加入端弯矩静态修正形函数或采用适合连接载荷的 Ritz 基，并重新验证动力学。本次没有加入修正基或更改默认两阶参数。','',
-'```matlab\naddpath(\'matlab\');\ntest_continuum_high_modes;\nresult=validate_continuum_structure;\nplot_continuum_static_validation;\naudit_continuum_connection;\n```','',
+'```matlab\naddpath(\'matlab\'); setup_paths;\ntest_continuum_high_modes;\nresult=validate_continuum_structure;\nplot_continuum_static_validation;\naudit_continuum_connection;\n```','',
 '主验证会缓存每个模态数的 MAT 结果；复跑会核对参数后复用。修改求解器或模型实现后，应换输出目录或移走相应缓存再运行。全部结果位于 `report/continuum/structure_validation/`，不覆盖旧 3/4 阶研究。']
 (F/'verification_zh.md').write_text('\n'.join(lines)+'\n')
 print(F/'verification_zh.md')

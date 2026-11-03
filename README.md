@@ -17,7 +17,7 @@ TowerCrane-OptimalControl
 
 ## Folders
 
-- `matlab`: MATLAB models, simulations, and optimal-control scripts.
+- `matlab`: MATLAB models, simulations, and optimal-control scripts. See [MATLAB 目录与运行指南](matlab/README.md).
 - `python`: Python implementations, numerical experiments, and analysis tools.
 - `paper`: Literature notes, paper drafts, and references.
 - `report`: Project reports and technical writeups.
@@ -37,7 +37,7 @@ TowerCrane-OptimalControl
 根据 Li et al. (2022) 建立的降阶模型，包含吊点竖向柔性、绳索轴向弹性和规定收放绳输入。它不是完整 ALE-ANCF 有限元复现。
 
 ```matlab
-addpath('matlab');
+addpath('matlab'); setup_paths;
 test_flexible_variable_length;
 out = tower_crane_flexible_variable_length;
 ```
@@ -52,7 +52,7 @@ out = tower_crane_flexible_variable_length;
 新增分布质量、轴向/弯曲弹性和材料流动惯性。采用给定材料坐标的固定数量移动网格；吊点继续使用集总竖向柔性支撑。
 
 ```matlab
-addpath('matlab');
+addpath('matlab'); setup_paths;
 test_aleancf;
 out = tower_crane_aleancf;
 ```
@@ -78,7 +78,7 @@ out = tower_crane_aleancf;
 塔身与臂架采用 Euler–Bernoulli 连续梁假设模态法，包含塔顶平移、转角和移动小车的惯性耦合。吊索与吊物通过位置约束连接，使用加速度级鞍点系统与约束稳定化求解。底座固支，二维平面演示模型。
 
 ```matlab
-addpath('matlab');
+addpath('matlab'); setup_paths;
 out = tower_crane_continuum_ancf;
 test_continuum_ancf;
 ```
@@ -103,7 +103,7 @@ test_continuum_ancf;
 
 - [静态解析核对及完整动态分析](report/continuum/modal_convergence/analysis_zh.md)
 - [时程对比图](report/continuum/modal_convergence/response_comparison.png)
-- [复现脚本](matlab/analyze_continuum_modal_convergence.m)
+- [复现脚本](matlab/analysis/analyze_continuum_modal_convergence.m)
 
 固定六段吊索，在完整 10 s 工况下比较每根梁三阶与四阶模态。摆角对本次加密较不敏感，但臂端静挠度和结构振动尚不能认定收敛；具体误差及判定范围见分析报告。
 
@@ -126,7 +126,7 @@ test_continuum_ancf;
 当前程序使用正号 `rJ,Y = ξ bη + ψ(ξ)ζ`。重新验证入口：
 
 ```matlab
-addpath('matlab');
+addpath('matlab'); setup_paths;
 audit_continuum_connection;
 test_continuum_high_modes;
 test_continuum_ancf;

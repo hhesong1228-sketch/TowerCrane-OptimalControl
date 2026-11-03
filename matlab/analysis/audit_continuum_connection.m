@@ -2,7 +2,7 @@ function audit_continuum_connection()
 % Independent geometric audit of the claimed rigid mast/jib connection.
 % X right, Y down, z upward: mast tangent [w_T'(H);-1].
 % A rigid orthogonal jib must have slope +w_T'(H), to first order.
-folder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'report','continuum','structure_validation_corrected');
+folder=fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))),'report','continuum','structure_validation_corrected');
 if ~exist(folder,'dir'),mkdir(folder);end
 p=continuum.parameters();p.theta0=0; rows=[];
 for n=[2 4 8 12 16]

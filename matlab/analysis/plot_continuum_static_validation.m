@@ -1,5 +1,5 @@
 function plot_continuum_static_validation()
-folder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'report','continuum','structure_validation_corrected');
+folder=fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))),'report','continuum','structure_validation_corrected');
 f=figure('Visible','off','Color','w','Position',[100 100 1150 800]);tiledlayout(2,2);
 for j=1:2
  T=readtable(fullfile(folder,sprintf('static_fields_case%d.csv',j)));

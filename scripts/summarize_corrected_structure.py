@@ -47,7 +47,7 @@ lines+=['',f"8→12 阶时，{len(last)-len(failed)}/8 项满足判据。"+('未
 '## 6. 适用结论与复现','',
 '刚接符号和方向错误已修复，独立几何、静平衡与数值回归通过。结构模态误差仍需按量报告，不能表述为所有量已经收敛到 1%。若需要更高的结构转角/臂端挠度精度，下一步应考虑端弯矩静态修正形函数或适合连接荷载的 Ritz 基，而不只是提高积分精度。','',
 '误差针对已保存时刻；未单独验证高频反力峰值的采样收敛，未对所有高阶模型重新进行时间步和绳网格联合加密。没有新增基础柔性、轴压几何刚度或实机参数识别；本次不构成实验验证。','',
-'```matlab\naddpath(\'matlab\');\naudit_continuum_connection;\ntest_continuum_high_modes;\ntest_continuum_ancf;\nresult=validate_continuum_structure;\nplot_continuum_static_validation;\nout=tower_crane_continuum_ancf;\n```','',
+'```matlab\naddpath(\'matlab\'); setup_paths;\naudit_continuum_connection;\ntest_continuum_high_modes;\ntest_continuum_ancf;\nresult=validate_continuum_structure;\nplot_continuum_static_validation;\nout=tower_crane_continuum_ancf;\n```','',
 '本目录独立保存新结果。动态缓存核对参数及 point/setup/assemble/modes/rhs/simulate/initial_state 源文件内容。该检查不覆盖所有间接依赖；更改绳单元、输入函数、模型或求解器后，请换目录或移走旧缓存再运行。']
 (F/'verification_zh.md').write_text('\n'.join(lines)+'\n')
 # Update bilingual manuals' result chapter from the same newly computed numbers.

@@ -1,6 +1,6 @@
 function summarize_continuum_sign_fix()
 % Compare before/after runs without treating the former solution as truth.
-root=fileparts(fileparts(mfilename('fullpath')));
+root=fileparts(fileparts(fileparts(mfilename('fullpath'))));
 old=fullfile(root,'report','continuum','structure_validation');
 folder=fullfile(root,'report','continuum','structure_validation_corrected');
 rows=[];diagnostics=[];

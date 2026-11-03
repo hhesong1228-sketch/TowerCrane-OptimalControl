@@ -1,7 +1,7 @@
 function result=analyze_continuum_modal_convergence()
 % Compare 3/4 modes per beam with the same six-element cable and full input.
 % Static references are exact within the implemented linear beam kinematics.
-folder=fullfile(fileparts(fileparts(mfilename('fullpath'))),'report','continuum','modal_convergence_corrected');
+folder=fullfile(fileparts(fileparts(fileparts(mfilename('fullpath')))),'report','continuum','modal_convergence_corrected');
 if ~exist(folder,'dir'), mkdir(folder); end
 diary(fullfile(folder,'run_log.txt')); cleanup=onCleanup(@()diary('off')); %#ok<NASGU>
 p=continuum.parameters(); p.nElem=6; p.relTol=2e-8; p.absTol=1e-10;
