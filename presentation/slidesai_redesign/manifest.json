@@ -1,0 +1,238 @@
+{
+  "presentationId": "ecef5c59-39b5-4b39-8e45-558f52ad44b7",
+  "editorUrl": "https://app.slidesai.io/p/ecef5c59-39b5-4b39-8e45-558f52ad44b7?src=mcp",
+  "slideCount": 28,
+  "slides": [
+    {
+      "slideNumber": 1,
+      "slideId": "slidesai_C0NfnoJw",
+      "title": "二次元柔軟タワークレーン",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 2,
+      "slideId": "slidesai_h3N6CVro",
+      "title": "構造の柔性は吊り荷と残留振動をどう変えるか",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 3,
+      "slideId": "slidesai_QSvdMJaQ",
+      "title": "共通する梁理論と、異なるロープの扱い",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 4,
+      "slideId": "slidesai_HzpH2pSz",
+      "title": "タワー頂部の変位と回転を吊点へ伝える",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 5,
+      "slideId": "slidesai_zshYAB1T",
+      "title": "構造は微小変形、ロープは大変位を許容",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 6,
+      "slideId": "slidesai_N-IIwPxW",
+      "title": "連続はりのエネルギーから運動方程式を得る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 7,
+      "slideId": "slidesai_a3P06GUf",
+      "title": "固定端の条件を満たす振型で変位場を展開",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 8,
+      "slideId": "slidesai_st6QkF0y",
+      "title": "モード展開により質量と剛性を空間積分へ集約",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 9,
+      "slideId": "slidesai_j2wlpjT1",
+      "title": "塔頂の回転がジブ全体の鉛直変位に寄与する",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 10,
+      "slideId": "slidesai_mYqjQ8kH",
+      "title": "絶対速度の積分がタワーとの慣性連成を生む",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 11,
+      "slideId": "slidesai_Chptm2XP",
+      "title": "吊点の加速度には移動に伴う対流項が現れる",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 12,
+      "slideId": "slidesai_uobFiYUB",
+      "title": "吊点の絶対運動から一般化質量と力を得る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 13,
+      "slideId": "slidesai_gRYB_6cT",
+      "title": "位置と材料勾配を Hermite 補間で共有する",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 14,
+      "slideId": "slidesai_xqhIAaGU",
+      "title": "エネルギー勾配を弾性内力として組み立てる",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 15,
+      "slideId": "slidesai_PLS4Be19",
+      "title": "固定材料点の微分が輸送項を生む",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 16,
+      "slideId": "slidesai_K0clnMk9",
+      "title": "材料加速度の仮想仕事から要素方程式を得る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 17,
+      "slideId": "slidesai_ffd7QMIb",
+      "title": "独立した吊り荷位置を含む座標系を構成",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 18,
+      "slideId": "slidesai_2rpqV_UU",
+      "title": "二つの位置接続とトロリ軌道を同時に満たす",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 19,
+      "slideId": "slidesai_9WA8g9ji",
+      "title": "鞍点系で加速度と接続反力を同時に計算",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 20,
+      "slideId": "slidesai_sYfQ4dh7",
+      "title": "静荷重平衡から同じ角度の摂動を与える",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 21,
+      "slideId": "slidesai_fbhT21ci",
+      "title": "入力と吊索網格を固定し、梁モード数だけを変更",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 22,
+      "slideId": "slidesai_2ZGo3kKz",
+      "title": "数値残差と物理モデルの精度を区別する",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 23,
+      "slideId": "slidesai_O4AF87Th",
+      "title": "振れ角は近接し、ジブ総変位には差が残る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 24,
+      "slideId": "slidesai_vB7nWK7a",
+      "title": "構造振動は三・四モード間でも感度が残る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 25,
+      "slideId": "slidesai_kH0Lsi46",
+      "title": "静的解析解を基準に真の打切り誤差を測る",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 26,
+      "slideId": "slidesai_nhEmMJ82",
+      "title": "塔頂回転角の近似がジブ静挠度を支配する",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 27,
+      "slideId": "slidesai_P0zyqkVd",
+      "title": "二次元モデルの構造精度を改善してから制御へ進む",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    },
+    {
+      "slideNumber": 28,
+      "slideId": "slidesai_p0HwFQPK",
+      "title": "理論と数値結果の出典",
+      "format": "html",
+      "layoutCheck": "passed-wireframe",
+      "visualCheck": "browser-render-not-verified-requires-login"
+    }
+  ],
+  "math": "SlidesAI native KaTeX; New Times not used, per user preference for SlidesAI",
+  "sourceFiles": [
+    "matlab/+continuum",
+    "matlab/+aleancf",
+    "report/continuum/modal_convergence"
+  ],
+  "created": "2026-11-02"
+}

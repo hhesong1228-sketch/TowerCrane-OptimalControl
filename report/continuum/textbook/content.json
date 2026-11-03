@@ -1,0 +1,1868 @@
+[
+  {
+    "title": [
+      "连续体塔身、臂架与 ANCF 吊索",
+      "連続体タワー・ジブと ANCF 吊りロープ"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "建模、统一运动方程与数值验证\n完整推导说明书 · 中文版",
+          "モデル化・統一運動方程式・数値検証\n詳細導出説明書 · 日本語版"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "从连续场到离散坐标，从能量与虚功到约束动力学。逐项说明质量、刚度、阻尼、重力、材料输运和连接反力，并给出默认模型的行列编号。",
+          "連続場から離散座標へ、エネルギーと仮想仕事から拘束動力学へ。質量・剛性・減衰・重力・材料輸送・接続反力を項別に説明し、既定モデルの行列番号を示す。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{bmatrix}\\mathbf M&\\mathbf G^{\\mathsf T}\\\\\\mathbf G&\\mathbf0\\end{bmatrix}\\begin{bmatrix}\\ddot{\\mathbf q}\\\\\\boldsymbol\\lambda\\end{bmatrix}=\\begin{bmatrix}\\mathbf f\\\\\\boldsymbol\\gamma-2\\alpha\\dot{\\boldsymbol\\Phi}-\\beta_B^2\\boldsymbol\\Phi\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "版本：2026-11-03。依据 2026-11-02 符号修正后的代码与已完成的数值验证。本次为文档推导与排版重写，不声称进行了新的加密仿真。",
+          "版：2026-11-03。2026-11-02 の符号修正後のコードと実施済み数値検証に基づく。今回は導出説明と組版の改訂であり、新たな高次解析の実施を意味しない。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "适用范围：二维平面、塔根固支、结构小转角、吊索可大位移。示例参数未经过实机辨识。",
+          "適用範囲：二次元平面、タワー基部固定、構造の微小回転、ロープの大変位。例示パラメータは実機同定値ではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "阅读路线与模型边界",
+      "読み方とモデルの範囲"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "本书按“连续梁 → 小车运动 → ANCF 绳 → 连接约束 → 统一方程 → 数值验证”的顺序展开。所有公式均对应现行实现，未把尚未实现的控制器或基础模型写成已有功能。",
+          "本書は「連続はり → トロリ運動 → ANCF ロープ → 接続拘束 → 統一方程式 → 数値検証」の順に進む。式は現行実装に対応し、未実装の制御器や基礎モデルを既存機能として扱わない。"
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          [
+            "部分",
+            "内容"
+          ],
+          [
+            "部分",
+            "内容"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "结构",
+              "Euler–Bernoulli 塔身与臂架；假设模态降阶。"
+            ],
+            [
+              "構造",
+              "Euler–Bernoulli タワーとジブ。仮定モードによる低次元化。"
+            ]
+          ],
+          [
+            [
+              "吊索",
+              "三次 Hermite ANCF 单元；给定绳长时使用 ALE。"
+            ],
+            [
+              "ロープ",
+              "3 次 Hermite ANCF 要素。ロープ長変化には ALE を使用。"
+            ]
+          ],
+          [
+            [
+              "驱动",
+              "规定小车轨迹及收放绳轨迹，计算所需小车广义力。"
+            ],
+            [
+              "駆動",
+              "トロリと巻上げの軌道を指定し、必要なトロリ一般化力を算出。"
+            ]
+          ],
+          [
+            [
+              "基础",
+              "“塔座”按塔根固支处理，没有独立基础自由度。"
+            ],
+            [
+              "基礎",
+              "タワー基部を固定。独立した基礎自由度は設けない。"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "不包含：回转与扭转、剪切变形、塔身轴向缩短及几何刚度、拉杆、配重与平衡臂、卷筒接触、松绳接触、电机动力学和最优控制。需研究弹性塔座时，应增加基础平移/转动坐标及相应质量、阻尼、刚度。",
+          "対象外：旋回・ねじり、せん断変形、タワー軸縮みと幾何剛性、タイロッド、カウンタウェイト、カウンタジブ、ドラム接触、たるみ接触、モータ動力学、最適制御。弾性基礎には並進・回転座標と対応する質量・減衰・剛性の追加が必要である。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "阅读重点：第 7–10 页给出结构矩阵展开；第 11–15 页给出绳单元与 ALE；第 16–20 页给出约束、统一方程及逐行展开。后续页给出初值、输入、输出定义和独立验证。公式编号跨语言保持一致。",
+          "重点：7–10 ページは構造行列、11–15 ページはロープ要素と ALE、16–20 ページは拘束・統一式・成分展開を示す。以降で初期値、入力、出力定義、独立検証を述べる。数式番号は両言語で共通とする。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "1  坐标、符号与维数",
+      "1  座標・記号・次元"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "全局原点位于未变形塔顶，X 向右、Y 向下。塔身坐标 z 自底向上，臂坐标 ξ 自臂根向右。塔身高 H，臂长 B。重力向量采用正 Y 方向。",
+          "全体座標の原点は未変形のタワー頂部であり、X は右向き、Y は下向きとする。タワー座標 z は基部から上へ、ジブ座標 ξ は根元から右へ測る。高さ H、ジブ長 B とし、重力は正の Y 方向に作用する。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "0\\le z\\le H,\\quad 0\\le\\xi\\le B,\\qquad\\mathbf g=\\begin{bmatrix}0\\\\g\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf q_s=\\begin{bmatrix}\\boldsymbol\\eta\\\\\\boldsymbol\\zeta\\\\x\\end{bmatrix}\\in\\mathbb R^{n_s},\\quad n_s=n_T+n_J+1,\\qquad n_c=4(N+1)"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf q=\\begin{bmatrix}\\mathbf q_s\\\\\\mathbf e\\\\\\mathbf r_P\\end{bmatrix}\\in\\mathbb R^n,\\quad n=n_s+n_c+2,\\quad\\boldsymbol\\lambda\\in\\mathbb R^5"
+      },
+      {
+        "type": "p",
+        "text": [
+          "η 为塔身模态坐标，ζ 为臂架相对弯曲模态坐标，x 为沿未变形臂轴的材料位置参数，并非弯曲后的弧长。N 为绳单元数，e 是全绳位置与斜率坐标，rP 为独立吊重位置。点号为时间导数；梁的撇号为空间坐标导数。",
+          "η はタワー、ζ はジブ相対曲げのモード座標、x は未変形ジブ軸上の位置パラメータであり、変形後の弧長ではない。N はロープ要素数、e は全ロープの位置・勾配座標、rP は独立した吊荷位置である。上点は時間微分、はりのプライムは空間微分を表す。"
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          [
+            "符号",
+            "含义与单位"
+          ],
+          [
+            "記号",
+            "意味・単位"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "μT, μJ, μc",
+              "塔身、臂、绳参考线密度 [kg/m]；μc = ρA。"
+            ],
+            [
+              "μT, μJ, μc",
+              "タワー・ジブ・ロープの基準線密度 [kg/m]。μc = ρA。"
+            ]
+          ],
+          [
+            [
+              "EIT, EIJ, EIc",
+              "各构件抗弯刚度 [N·m²]；EA 为绳轴向刚度 [N]。"
+            ],
+            [
+              "EIT, EIJ, EIc",
+              "各部材の曲げ剛性 [N·m²]。EA はロープ軸剛性 [N]。"
+            ]
+          ],
+          [
+            [
+              "ν, α, βB",
+              "ν 为阻尼比参数；α, βB 为稳定化增益 [s⁻¹]。"
+            ],
+            [
+              "ν, α, βB",
+              "ν は減衰比パラメータ、α, βB は安定化ゲイン [s⁻¹]。"
+            ]
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "2  连续梁：由强式到弱式",
+      "2  連続はり：強形式から弱形式へ"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "均匀 Euler–Bernoulli 梁假设横截面始终垂直于中性线，忽略剪切变形和截面转动惯量。以下用局部横移 w 与轴坐标 ℓ 表示任意一根梁。",
+          "一様 Euler–Bernoulli はりでは断面が中立軸に直交したままとし、せん断変形と断面の回転慣性を無視する。以下では任意のはりの局所横変位を w、軸座標を ℓ とする。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mu\\ddot w+(EIw^{\\prime\\prime})^{\\prime\\prime}=p(\\ell,t)"
+      },
+      {
+        "type": "eq",
+        "tex": "\\int_0^L\\mu\\,\\delta w\\,\\ddot w\\,d\\ell+\\int_0^L EI\\,\\delta w^{\\prime\\prime}w^{\\prime\\prime}\\,d\\ell=\\delta W_{\\rm ext}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\int_0^L\\delta w(EIw^{\\prime\\prime})^{\\prime\\prime}d\\ell=\\int_0^L EI\\delta w^{\\prime\\prime}w^{\\prime\\prime}d\\ell+\\left[\\delta w(EIw^{\\prime\\prime})^{\\prime}-\\delta w^{\\prime}EIw^{\\prime\\prime}\\right]_0^L"
+      },
+      {
+        "type": "p",
+        "text": [
+          "分部积分把四阶空间微分转为二阶导数乘积。固支端的位移与转角是本质边界条件，必须由基函数满足；自由端力与弯矩通过外虚功进入。塔身—臂架连接的惯性与重力载荷通过绝对位置的虚位移传递，不能把两根梁的未加载强式直接当作完整耦合方程。",
+          "部分積分により 4 階空間微分を 2 階微分の積へ変換する。固定端の変位・回転は本質境界条件であり、基底で満たす。端力と端モーメントは外力の仮想仕事に入る。接続部の慣性・重力は絶対位置の仮想変位を介して伝達され、各はりの無負荷強形式だけでは連成式にならない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\delta w=\\boldsymbol\\phi\\,\\delta\\boldsymbol\\eta,\\qquad \\int_{t_0}^{t_1}(\\delta T-\\delta U+\\delta W_{\\rm ext})dt=0\\quad\\Longrightarrow\\quad\\text{generalized equations}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "本模型采用连续梁积分的假设模态法，而非将塔身和臂架划分梁单元。ANCF 有限单元仅用于吊索。后续矩阵由同一组位移场、能量及虚功一致推导。",
+          "本モデルでは連続はりの積分に基づく仮定モード法を用い、タワーとジブをはり要素に分割しない。ANCF 有限要素はロープにのみ用いる。以下の行列は同じ変位場・エネルギー・仮想仕事から整合的に導く。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "3  假设模态与截断",
+      "3  仮定モードと打切り"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "w_T(z,t)=\\sum_{i=1}^{n_T}\\phi_i(z)\\eta_i(t),\\qquad w_J(\\xi,t)=\\sum_{j=1}^{n_J}\\psi_j(\\xi)\\zeta_j(t)"
+      },
+      {
+        "type": "eq",
+        "tex": "F_i(u)=\\cosh(\\beta_i u)-\\cos(\\beta_i u)-\\sigma_i[\\sinh(\\beta_i u)-\\sin(\\beta_i u)]"
+      },
+      {
+        "type": "eq",
+        "tex": "\\sigma_i=\\frac{\\cosh\\beta_i+\\cos\\beta_i}{\\sinh\\beta_i+\\sin\\beta_i},\\qquad\\cosh\\beta_i\\cos\\beta_i=-1"
+      },
+      {
+        "type": "eq",
+        "tex": "\\phi_i(z)=\\frac{F_i(z/H)}{F_i(1)},\\quad\\psi_j(\\xi)=\\frac{F_j(\\xi/B)}{F_j(1)},\\quad\\beta_{1:4}\\simeq(1.875104,4.694091,7.854757,10.995541)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "基函数满足固支端位移和斜率为零，并归一化为端点值 1。因此 η、ζ 的单位为 m，a = φ(H) 为无量纲行向量，b = φ′(H) 的单位为 m⁻¹。",
+          "基底は固定端で変位・勾配がゼロとなり、先端値を 1 に正規化する。したがって η、ζ の単位は m、行ベクトル a = φ(H) は無次元、b = φ′(H) の単位は m⁻¹ となる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf a=\\boldsymbol\\phi(H),\\quad\\mathbf b=\\boldsymbol\\phi^{\\prime}(H),\\qquad\\int_0^H\\phi_i\\phi_jdz=\\frac H4\\delta_{ij},\\quad\\int_0^H\\phi_i^{\\prime\\prime}\\phi_j^{\\prime\\prime}dz=\\frac{\\beta_i^4}{4H^3}\\delta_{ij}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "自由端无载条件只用于选取基底。实际塔顶存在臂架传递的弯矩，有限项展开不能逐点满足该载荷的全部自然边界条件，所以塔顶转角可能慢收敛。代码支持 1–16 阶，并以稳定表达式避免高阶双曲函数相减造成的损失。",
+          "自由端無負荷条件は基底選定に用いる。実際の頂部にはジブからのモーメントが作用し、有限項では全ての自然境界条件を点ごとに満たせないため、頂部回転の収束が遅くなり得る。コードは 1–16 次に対応し、高次双曲線関数の差による桁落ちを避ける安定式を用いる。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "4  绝对运动学与刚接符号",
+      "4  絶対運動学と剛接符号"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf r_T(z)=\\begin{bmatrix}\\boldsymbol\\phi(z)\\boldsymbol\\eta\\\\H-z\\end{bmatrix},\\qquad\\mathbf r_J(\\xi)=\\begin{bmatrix}\\xi+\\mathbf a\\boldsymbol\\eta\\\\\\xi\\mathbf b\\boldsymbol\\eta+\\boldsymbol\\psi(\\xi)\\boldsymbol\\zeta\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "塔顶横移使整根臂架沿 X 平移；塔顶斜率使臂架产生竖向刚体转动位移 ξbη；ψζ 是相对于臂根随动基线的弯曲。三者共同决定绝对位置。",
+          "頂部横変位はジブ全体を X 方向へ並進させる。頂部勾配は鉛直方向の剛体回転変位 ξbη を与え、ψζ は根元に追従する基準線からの相対曲げを表す。これらが絶対位置を決める。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf t_T=\\begin{bmatrix}\\mathbf b\\boldsymbol\\eta\\\\-1\\end{bmatrix},\\qquad\\mathbf t_J(0)=\\begin{bmatrix}1\\\\\\mathbf b\\boldsymbol\\eta\\end{bmatrix},\\qquad\\mathbf t_T^{\\mathsf T}\\mathbf t_J(0)=0"
+      },
+      {
+        "type": "p",
+        "text": [
+          "因此竖向刚体项必须取正号。若误写为 −ξbη，刚接正交性将被破坏，垂直荷载产生的塔身侧移方向也会错误。2026-11-02 修正已同步进入位置、质量、重力、对流项与输出。",
+          "したがって鉛直剛体項の符号は正である。−ξbη とすると剛接の直交性が失われ、鉛直荷重によるタワー横変位の方向も誤る。2026-11-02 の修正は位置・質量・重力・対流項・出力へ一貫して反映した。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\dot{\\mathbf r}_J=\\mathbf A_J(\\xi)\\dot{\\mathbf q}_s,\\qquad\\mathbf A_J(\\xi)=\\begin{bmatrix}\\mathbf a&\\mathbf0&0\\\\\\xi\\mathbf b&\\boldsymbol\\psi(\\xi)&0\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "该运动学保留一阶转角项，忽略旋转导致的水平二阶缩短；并非结构的大转动模型。ANCF 绳的大转动能力不能自动扩展塔身与臂架的适用范围。",
+          "この運動学は回転の 1 次項を保持し、回転による水平短縮の 2 次項を無視する。構造の大回転モデルではない。ANCF ロープが大回転に対応していても、タワー・ジブの適用範囲は拡張されない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "5  梁系动能与质量矩阵逐块展开",
+      "5  はり系の運動エネルギーと質量行列"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "T_s=\\frac12\\int_0^H\\mu_T(\\boldsymbol\\phi\\dot{\\boldsymbol\\eta})^2dz+\\frac12\\int_0^B\\mu_J\\dot{\\mathbf r}_J^{\\mathsf T}\\dot{\\mathbf r}_Jd\\xi=\\frac12\\dot{\\mathbf q}_s^{\\mathsf T}\\mathbf M_s\\dot{\\mathbf q}_s"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf M_s=\\begin{bmatrix}\\mathbf M_{TT}&\\mathbf M_{TJ}&\\mathbf0\\\\\\mathbf M_{TJ}^{\\mathsf T}&\\mathbf M_{JJ}&\\mathbf0\\\\\\mathbf0&\\mathbf0&0\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}(M_{TT})_{ik}&=\\mu_T\\int_0^H\\phi_i\\phi_kdz+\\mu_JB\\,a_i a_k+\\frac{\\mu_JB^3}{3}b_i b_k,\\\\(M_{TJ})_{ij}&=\\mu_J b_i\\int_0^B\\xi\\psi_j(\\xi)d\\xi,\\\\(M_{JJ})_{jk}&=\\mu_J\\int_0^B\\psi_j\\psi_kd\\xi.\\end{aligned}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "MTT 为 nT×nT，MTJ 为 nT×nJ，MJJ 为 nJ×nJ。MTT 的三项分别来自塔身横移、臂架随塔顶平移、臂架随塔顶转动。MTJ 是转动与臂相对弯曲之间的惯性耦合。",
+          "MTT は nT×nT、MTJ は nT×nJ、MJJ は nJ×nJ である。MTT の 3 項はタワー横移動、頂部に追従するジブ並進、頂部に追従するジブ回転に対応する。MTJ は回転とジブ相対曲げの慣性連成である。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "梁系质量矩阵的 x 行列为零，因为 x 只描述小车位置。加入小车的 mT JAᵀJA 后，结构坐标的完整质量矩阵才具有小车方向惯性。不可将梁系 Ms 的零行误判为完整系统奇异。",
+          "はり系の質量行列では x 行・列がゼロである。x はトロリ位置だけを表すためである。mT JAᵀJA を加えるとトロリ方向の慣性が生じる。Ms のゼロ行だけで全体系を特異と判断してはならない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "6  刚度、重力与阻尼",
+      "6  剛性・重力・減衰"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "U_s=\\frac12\\int_0^H EI_T(w_T^{\\prime\\prime})^2dz+\\frac12\\int_0^B EI_J(w_J^{\\prime\\prime})^2d\\xi=\\frac12\\mathbf q_s^{\\mathsf T}\\mathbf K_s\\mathbf q_s"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf K_s=\\operatorname{diag}(\\mathbf K_T,\\mathbf K_J,0),\\quad (K_T)_{ik}=EI_T\\int_0^H\\phi_i^{\\prime\\prime}\\phi_k^{\\prime\\prime}dz,\\quad (K_J)_{jk}=EI_J\\int_0^B\\psi_j^{\\prime\\prime}\\psi_k^{\\prime\\prime}d\\xi"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf F_{g,s}=\\begin{bmatrix}\\frac12\\mu_JgB^2\\mathbf b^{\\mathsf T}\\\\\\mu_Jg\\int_0^B\\boldsymbol\\psi^{\\mathsf T}d\\xi\\\\0\\end{bmatrix},\\qquad V_{g,s}=-\\mathbf F_{g,s}^{\\mathsf T}\\mathbf q_s"
+      },
+      {
+        "type": "p",
+        "text": [
+          "塔身自身的 Y 坐标在本近似内不变，其自重势能为常数，故不产生横向广义重力；也未引入自重轴力导致的几何刚度。臂根的刚体转动曲率为零，故不会在 K 中产生额外的塔臂交叉刚度。",
+          "本近似ではタワー各点の Y 座標が変化しないため、その自重位置エネルギーは定数で、横方向一般化力を生じない。自重軸力による幾何剛性も導入しない。ジブ根元の剛体回転は曲率ゼロであり、K に追加の塔・ジブ交差剛性を生じない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf C_s=\\operatorname{diag}(c_{T,1},\\ldots,c_{T,n_T},c_{J,1},\\ldots,c_{J,n_J},0),\\quad c_{T,i}=2\\nu\\sqrt{m_{T,i}^{(0)}(K_T)_{ii}}"
+      },
+      {
+        "type": "eq",
+        "tex": "m_{T,i}^{(0)}=\\mu_T\\int_0^H\\phi_i^2dz,\\qquad c_{J,j}=2\\nu\\sqrt{m_{J,j}^{(0)}(K_J)_{jj}},\\quad m_{J,j}^{(0)}=\\mu_J\\int_0^B\\psi_j^2d\\xi"
+      },
+      {
+        "type": "p",
+        "text": [
+          "ν 是未耦合梁的经验阻尼比参数，并不意味着完整耦合系统各阶阻尼比都相同。代码使用 max(32,4nT,4nJ) 点 Gauss 求积；阻尼不含绳轴向黏性项。",
+          "ν は非連成はりの経験的減衰比パラメータであり、全連成系の各モード減衰比が等しいことを意味しない。積分点数は max(32,4nT,4nJ)。ロープ軸方向の粘性減衰は含まない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "7  移动小车：雅可比与对流项",
+      "7  移動トロリ：ヤコビアンと対流項"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf r_A=\\mathbf r_J(x)=\\begin{bmatrix}x+\\mathbf a\\boldsymbol\\eta\\\\x\\mathbf b\\boldsymbol\\eta+\\boldsymbol\\psi(x)\\boldsymbol\\zeta\\end{bmatrix},\\qquad d=\\mathbf b\\boldsymbol\\eta+\\boldsymbol\\psi^{\\prime}(x)\\boldsymbol\\zeta"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf J_A=\\frac{\\partial\\mathbf r_A}{\\partial\\mathbf q_s}=\\begin{bmatrix}\\mathbf a&\\mathbf0&1\\\\x\\mathbf b&\\boldsymbol\\psi(x)&d\\end{bmatrix}\\in\\mathbb R^{2\\times n_s}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\dot{\\mathbf r}_A=\\mathbf J_A\\dot{\\mathbf q}_s,\\qquad\\ddot{\\mathbf r}_A=\\mathbf J_A\\ddot{\\mathbf q}_s+\\mathbf h_A"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf h_A=\\begin{bmatrix}0\\\\h\\end{bmatrix},\\qquad h=2[\\mathbf b\\dot{\\boldsymbol\\eta}+\\boldsymbol\\psi^{\\prime}(x)\\dot{\\boldsymbol\\zeta}]\\dot x+\\boldsymbol\\psi^{\\prime\\prime}(x)\\boldsymbol\\zeta\\dot x^2"
+      },
+      {
+        "type": "p",
+        "text": [
+          "链式求导必须同时考虑结构振动与 x 的移动。第一项是移动速度与模态速度的交叉项，第二项来自沿弯曲臂轨迹移动的曲率加速度。h 的单位为 m/s²。x 固定时，这两项均为零。",
+          "連鎖律では構造振動と x の移動を同時に考慮する。第 1 項は移動速度とモード速度の交差項、第 2 項は曲がったジブ上を移動する曲率加速度である。h の単位は m/s²。x が固定なら両項はゼロとなる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\delta\\mathbf r_A^{\\mathsf T}m_T(\\ddot{\\mathbf r}_A-\\mathbf g)=0\\ \\Longrightarrow\\ m_T\\mathbf J_A^{\\mathsf T}\\mathbf J_A\\ddot{\\mathbf q}_s=m_T\\mathbf J_A^{\\mathsf T}(\\mathbf g-\\mathbf h_A)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "上式只表示小车惯性与重力贡献，完整方程还包含梁力与连接约束力。不能只取小车动能中的对角项，也不能省去 h。",
+          "この式はトロリの慣性・重力寄与だけを示す。完全な式にははりの力と接続拘束力が加わる。トロリ運動エネルギーの対角項だけを採用したり、h を省略したりしてはならない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "8  小车加入后的矩阵与力向量",
+      "8  トロリを含む行列と力ベクトル"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "记 ψ = ψ(x)。将结构质量写成 3×3 分块，可以直接看到每一行列的物理来源。",
+          "ψ = ψ(x) と略記する。構造質量を 3×3 ブロックに分けると、各行・列の物理的起源が明確になる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf H_s=\\mathbf M_s+m_T\\mathbf J_A^{\\mathsf T}\\mathbf J_A=\\begin{bmatrix}\\mathbf H_{TT}&\\mathbf H_{TJ}&\\mathbf H_{Tx}\\\\\\mathbf H_{TJ}^{\\mathsf T}&\\mathbf H_{JJ}&\\mathbf H_{Jx}\\\\\\mathbf H_{Tx}^{\\mathsf T}&\\mathbf H_{Jx}^{\\mathsf T}&H_{xx}\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}\\mathbf H_{TT}&=\\mathbf M_{TT}+m_T(\\mathbf a^{\\mathsf T}\\mathbf a+x^2\\mathbf b^{\\mathsf T}\\mathbf b),\\\\\\mathbf H_{TJ}&=\\mathbf M_{TJ}+m_Tx\\mathbf b^{\\mathsf T}\\boldsymbol\\psi,\\\\\\mathbf H_{Tx}&=m_T(\\mathbf a^{\\mathsf T}+xd\\mathbf b^{\\mathsf T}),\\\\\\mathbf H_{JJ}&=\\mathbf M_{JJ}+m_T\\boldsymbol\\psi^{\\mathsf T}\\boldsymbol\\psi,\\\\\\mathbf H_{Jx}&=m_Td\\boldsymbol\\psi^{\\mathsf T},\\qquad H_{xx}=m_T(1+d^2).\\end{aligned}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}\\mathbf f_T&=\\tfrac12\\mu_JgB^2\\mathbf b^{\\mathsf T}-\\mathbf K_T\\boldsymbol\\eta-\\mathbf C_T\\dot{\\boldsymbol\\eta}+m_Tx\\mathbf b^{\\mathsf T}(g-h),\\\\\\mathbf f_J&=\\mu_Jg\\int_0^B\\boldsymbol\\psi^{\\mathsf T}d\\xi-\\mathbf K_J\\boldsymbol\\zeta-\\mathbf C_J\\dot{\\boldsymbol\\zeta}+m_T\\boldsymbol\\psi^{\\mathsf T}(g-h),\\\\f_x&=m_Td(g-h).\\end{aligned}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "块尺寸依次为 nT×nT、nT×nJ、nT×1、nJ×nJ、nJ×1、1×1。Hs 随位形变化；当前结构非线性主要来自移动吊点及其质量耦合，梁本身的弯曲能仍为二次型。",
+          "ブロック寸法は順に nT×nT、nT×nJ、nT×1、nJ×nJ、nJ×1、1×1。Hs は配置に依存する。現モデルの構造非線形性は主として移動支持点とその質量連成によるもので、はりの曲げエネルギーは二次形式である。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "9  ANCF 节点与形函数的行列展开",
+      "9  ANCF 節点と形状関数の成分展開"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf e_i=\\begin{bmatrix}X_i&Y_i&X_{s,i}&Y_{s,i}\\end{bmatrix}^{\\mathsf T},\\qquad\\mathbf e^{(k)}=\\begin{bmatrix}\\mathbf e_{k-1}\\\\\\mathbf e_k\\end{bmatrix}\\in\\mathbb R^8"
+      },
+      {
+        "type": "p",
+        "text": [
+          "斜率对未伸长材料坐标 s 求导，并非单位切向量。位置分量单位为 m，斜率分量无量纲。相邻单元共享位置与斜率，整个吊索共有 4(N+1) 个坐标。",
+          "勾配は未伸長材料座標 s に関する微分であり、単位接線ベクトルではない。位置の単位は m、勾配は無次元である。隣接要素は位置と勾配を共有し、全ロープの座標数は 4(N+1) となる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "u=\\frac{s-s_1}{\\ell},\\quad\\ell=s_2-s_1,\\qquad\\mathbf r(s,t)=\\mathbf N(u,t)\\mathbf e^{(k)}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf N=\\begin{bmatrix}H_1&0&\\ell H_2&0&H_3&0&\\ell H_4&0\\\\0&H_1&0&\\ell H_2&0&H_3&0&\\ell H_4\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}H_1&=1-3u^2+2u^3,&H_2&=u-2u^2+u^3,\\\\H_3&=3u^2-2u^3,&H_4&=-u^2+u^3.\\end{aligned}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf B=\\partial_s\\mathbf N,\\quad\\mathbf C=\\partial_s^2\\mathbf N,\\qquad\\mathbf r_s=\\mathbf B\\mathbf e^{(k)},\\quad\\mathbf r_{ss}=\\mathbf C\\mathbf e^{(k)}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "B、C 与 N 均为 2×8。两端只约束位置，端斜率不与臂或吊重锁定，对应无外加端弯矩的铰接。弯曲刚度虽小但非零，因此单元内仍存在弯曲内力。",
+          "B、C、N はいずれも 2×8。両端では位置だけを拘束し、端勾配をジブや吊荷へ固定しないため、外部端モーメントのないピン接続に対応する。曲げ剛性は小さいがゼロではなく、要素内には曲げ内力が存在する。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "10  绳应变、曲率与内力的解析导数",
+      "10  ロープひずみ・曲率・内力の解析微分"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf a_c=\\mathbf B\\mathbf e^{(k)},\\quad\\mathbf b_c=\\mathbf C\\mathbf e^{(k)},\\quad D=\\mathbf a_c^{\\mathsf T}\\mathbf a_c,\\quad c=a_{c,X}b_{c,Y}-a_{c,Y}b_{c,X}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\varepsilon=\\sqrt D-1,\\qquad\\kappa_m=\\frac cD,\\qquad U^{(k)}=\\frac12\\int_{s_1}^{s_2}(EA\\varepsilon^2+EI_c\\kappa_m^2)ds"
+      },
+      {
+        "type": "p",
+        "text": [
+          "本构采用工程轴向应变。κm 是材料曲率度量，等于切线角对参考材料坐标的导数；它与几何曲率 c/D^(3/2) 不同。不可把 Green–Lagrange 应变或几何曲率公式直接替换进当前内力。",
+          "構成則には工学軸ひずみを用いる。κm は接線角の基準材料座標微分に対応する材料曲率であり、幾何曲率 c/D^(3/2) とは異なる。Green–Lagrange ひずみや幾何曲率を現内力式へそのまま代入してはならない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\frac{\\partial\\varepsilon}{\\partial\\mathbf e^{(k)}}=\\frac{\\mathbf B^{\\mathsf T}\\mathbf a_c}{\\sqrt D},\\quad\\mathbf d_a=\\frac1D\\begin{bmatrix}b_{c,Y}\\\\-b_{c,X}\\end{bmatrix}-\\frac{2c}{D^2}\\mathbf a_c,\\quad\\mathbf d_b=\\frac1D\\begin{bmatrix}-a_{c,Y}\\\\a_{c,X}\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf Q_{\\rm int}^{(k)}=\\int_{s_1}^{s_2}\\left[EA\\varepsilon\\frac{\\mathbf B^{\\mathsf T}\\mathbf a_c}{\\sqrt D}+EI_c\\kappa_m(\\mathbf B^{\\mathsf T}\\mathbf d_a+\\mathbf C^{\\mathsf T}\\mathbf d_b)\\right]ds"
+      },
+      {
+        "type": "eq",
+        "tex": "(Q_{\\rm int}^{(k)})_r=\\int_{s_1}^{s_2}\\left[EA\\varepsilon\\frac{\\sum_{a=1}^2 B_{ar}a_{c,a}}{\\sqrt D}+EI_c\\kappa_m\\sum_{a=1}^2(B_{ar}d_{a,a}+C_{ar}d_{b,a})\\right]ds,\\quad r=1,\\ldots,8"
+      },
+      {
+        "type": "p",
+        "text": [
+          "每单元用 8 点 Gauss 积分。EAε 是轴向本构力，非含弯曲剪力的完整端反力。程序对退化切线报错，并在采样轴向力到零时停止；这不是松绳接触模型。",
+          "各要素は 8 点 Gauss 積分を用いる。EAε は軸方向構成力であり、曲げせん断を含む全端反力ではない。退化接線ではエラーとし、評価点の軸力がゼロに達すると停止する。たるみ接触モデルではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "11  绳质量、重力与整体装配",
+      "11  ロープ質量・重力・全体組立て"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf M^{(k)}=\\mu_c\\int_{s_1}^{s_2}\\mathbf N^{\\mathsf T}\\mathbf Nds=\\frac{\\mu_c\\ell}{420}\\begin{bmatrix}156&22\\ell&54&-13\\ell\\\\22\\ell&4\\ell^2&13\\ell&-3\\ell^2\\\\54&13\\ell&156&-22\\ell\\\\-13\\ell&-3\\ell^2&-22\\ell&4\\ell^2\\end{bmatrix}\\otimes\\mathbf I_2"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf F_g^{(k)}=\\mu_cg\\begin{bmatrix}0&\\ell/2&0&\\ell^2/12&0&\\ell/2&0&-\\ell^2/12\\end{bmatrix}^{\\mathsf T}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "Kronecker 积表示上述每个标量替换为该标量乘 I₂，得到完整 8×8 矩阵。它与代码的 8 点积分一致。由于斜率坐标无量纲，位置/斜率混合块分别带 kg、kg·m、kg·m² 单位，不能把所有矩阵元均标为 kg。",
+          "Kronecker 積は各スカラーをその値と I₂ の積へ置き換え、完全な 8×8 行列を得ることを意味する。コードの 8 点積分と一致する。勾配座標が無次元なので、位置・勾配混合ブロックの単位は kg、kg·m、kg·m² となり、全成分を kg としてはならない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf e^{(k)}=\\mathbf A_k\\mathbf e,\\quad\\mathbf A_k\\in\\{0,1\\}^{8\\times n_c},\\qquad\\mathbf M_c=\\sum_{k=1}^N\\mathbf A_k^{\\mathsf T}\\mathbf M^{(k)}\\mathbf A_k"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf F_{g,c}=\\sum_k\\mathbf A_k^{\\mathsf T}\\mathbf F_g^{(k)},\\quad\\mathbf Q_{\\rm int}=\\sum_k\\mathbf A_k^{\\mathsf T}\\mathbf Q_{\\rm int}^{(k)},\\quad\\mathbf Q_{\\rm ALE}=\\sum_k\\mathbf A_k^{\\mathsf T}\\mathbf Q_{\\rm ALE}^{(k)}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "Ak 选取全局 e 中第 4(k−1)+1 至 4(k−1)+8 个分量。共享节点的质量和内力累加；连接反力另由约束装配，不应在绳顶重复加入小车质量，或在绳底重复加入吊重质量。",
+          "Ak は全体 e の第 4(k−1)+1 から 4(k−1)+8 成分を選択する。共有節点の質量・内力は加算する。接続反力は拘束で別途組み立てるので、ロープ頂部にトロリ質量、下端に吊荷質量を重複加算してはならない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "12  ALE：移动材料网格与链式微分",
+      "12  ALE：移動材料格子と連鎖微分"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "s_i(t)=\\left(-1+\\frac iN\\right)L(t),\\quad i=0,\\ldots,N,\\qquad \\ell=s_2-s_1"
+      },
+      {
+        "type": "p",
+        "text": [
+          "绳顶材料标签为 −L(t)，绳底材料标签恒为 0。所有单元按比例伸缩材料区间，不增删单元。N 对时间的偏导必须在材料坐标 s 固定时求取，而非在局部坐标 u 固定时求取。",
+          "上端材料ラベルは −L(t)、下端ラベルは常に 0。要素数を変えず、各材料区間を比例的に変化させる。N の時間偏微分は局所座標 u 固定ではなく、材料座標 s 固定で求める。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\dot u\\big|_s=-\\frac{\\dot s_1+u\\dot\\ell}{\\ell},\\qquad\\ddot u\\big|_s=-\\frac{\\ddot s_1+u\\ddot\\ell+2\\dot u\\dot\\ell}{\\ell}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf f_\\ell=(1,\\ell,1,\\ell),\\quad\\dot{\\mathbf f}_\\ell=(0,\\dot\\ell,0,\\dot\\ell),\\quad\\ddot{\\mathbf f}_\\ell=(0,\\ddot\\ell,0,\\ddot\\ell)"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf N_t=[(\\mathbf H_u\\odot\\mathbf f_\\ell)\\dot u+\\mathbf H\\odot\\dot{\\mathbf f}_\\ell]\\otimes\\mathbf I_2"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf N_{tt}=\\left[(\\mathbf H_{uu}\\dot u^2+\\mathbf H_u\\ddot u)\\odot\\mathbf f_\\ell+2\\mathbf H_u\\odot\\dot{\\mathbf f}_\\ell\\dot u+\\mathbf H\\odot\\ddot{\\mathbf f}_\\ell\\right]\\otimes\\mathbf I_2"
+      },
+      {
+        "type": "p",
+        "text": [
+          "H = [H₁,H₂,H₃,H₄]，⊙ 为逐元素乘法。固定长度时所有材料网格导数为零，Nt、Ntt 自动消失。注意 e 的时间导数是移动网格节点自由度的导数，不能独自代表材料速度。",
+          "H = [H₁,H₂,H₃,H₄]、⊙ は要素ごとの積である。長さ一定なら材料格子の時間微分はゼロで Nt、Ntt は消える。e の時間微分は移動格子節点自由度の微分であり、それだけでは材料速度を表さない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "13  ALE 单元运动方程",
+      "13  ALE 要素の運動方程式"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf v_m=\\mathbf N\\dot{\\mathbf e}^{(k)}+\\mathbf N_t\\mathbf e^{(k)},\\qquad\\mathbf a_m=\\mathbf N\\ddot{\\mathbf e}^{(k)}+2\\mathbf N_t\\dot{\\mathbf e}^{(k)}+\\mathbf N_{tt}\\mathbf e^{(k)}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\int_{s_1}^{s_2}\\delta\\mathbf r^{\\mathsf T}\\mu_c\\mathbf a_mds+\\delta U^{(k)}=\\int_{s_1}^{s_2}\\delta\\mathbf r^{\\mathsf T}\\mu_c\\mathbf gds+\\delta W_{\\rm end}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf M^{(k)}\\ddot{\\mathbf e}^{(k)}+\\mathbf Q_{\\rm int}^{(k)}+\\mathbf Q_{\\rm ALE}^{(k)}=\\mathbf F_g^{(k)}+\\mathbf F_{\\rm end}^{(k)}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}\\mathbf Q_{\\rm ALE}^{(k)}&=\\mathbf D_1^{(k)}\\dot{\\mathbf e}^{(k)}+\\mathbf D_2^{(k)}\\mathbf e^{(k)},\\\\\\mathbf D_1^{(k)}&=2\\mu_c\\int_{s_1}^{s_2}\\mathbf N^{\\mathsf T}\\mathbf N_tds,\\quad\\mathbf D_2^{(k)}=\\mu_c\\int_{s_1}^{s_2}\\mathbf N^{\\mathsf T}\\mathbf N_{tt}ds.\\end{aligned}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "D₁、D₂ 都是 8×8，但 D₁ 不是耗散阻尼，D₂ 也不是弹性刚度；它们是规定材料运动产生的惯性输运项。二者依赖 L、L̇、L̈。只修改随时间变化的质量矩阵而忽略这些项，将不再满足材料加速度虚功。",
+          "D₁、D₂ はともに 8×8 だが、D₁ は散逸減衰、D₂ は弾性剛性ではない。指定材料運動に由来する慣性輸送項で、L、L̇、L̈ に依存する。時間変化質量だけを変更してこれらを省くと、材料加速度の仮想仕事と整合しなくなる。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "当前模型只描述自由绳段及给定材料轨迹。绳长变化时自由段质量 μcL 改变，属于开放子系统；未构建卷筒接触、边界通量与执行器完整功率平衡，因此不能把变长工况总能量变化直接解释成能量守恒误差或卷扬机能耗。",
+          "現モデルは自由ロープ区間と指定材料軌道を記述する。長さ変化時には自由区間質量 μcL が変化する開放部分系となる。ドラム接触、境界流束、アクチュエータの完全な動力収支は含まないため、可変長時のエネルギー変化を保存誤差や巻上げ消費エネルギーと解釈してはならない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "14  五条位置约束及雅可比矩阵",
+      "14  5 本の位置拘束とヤコビアン"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf E_A=\\begin{bmatrix}\\mathbf I_2&\\mathbf0_{2\\times(n_c-2)}\\end{bmatrix},\\quad\\mathbf E_B=\\begin{bmatrix}\\mathbf0_{2\\times(n_c-4)}&\\mathbf I_2&\\mathbf0_{2\\times2}\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\boldsymbol\\Phi=\\begin{bmatrix}\\mathbf E_A\\mathbf e-\\mathbf r_A\\\\\\mathbf E_B\\mathbf e-\\mathbf r_P\\\\x-x_d(t)\\end{bmatrix}=\\mathbf0,\\qquad\\mathbf G=\\frac{\\partial\\boldsymbol\\Phi}{\\partial\\mathbf q}\\in\\mathbb R^{5\\times n}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf G=\\left[\\begin{array}{ccc|c|cc}-\\mathbf a&\\mathbf0&-1&(E_A)_{1,:}&0&0\\\\-x\\mathbf b&-\\boldsymbol\\psi&-d&(E_A)_{2,:}&0&0\\\\\\mathbf0&\\mathbf0&0&(E_B)_{1,:}&-1&0\\\\\\mathbf0&\\mathbf0&0&(E_B)_{2,:}&0&-1\\\\\\mathbf0&\\mathbf0&1&\\mathbf0&0&0\\end{array}\\right]"
+      },
+      {
+        "type": "p",
+        "text": [
+          "列组依次是 η、ζ、x、e、XP、YP；行 1–2 为上端连接，行 3–4 为下端连接，行 5 为小车轨迹。绳长不再追加为第六约束：L(t) 已通过材料网格进入单元，绳的实际伸长由应变决定。",
+          "列群は η、ζ、x、e、XP、YP の順。第 1–2 行は上端接続、第 3–4 行は下端接続、第 5 行はトロリ軌道である。L(t) は材料格子を介して要素に入っており、実際の伸びはひずみで決まるため、長さを第 6 拘束として追加しない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\dot{\\boldsymbol\\Phi}=\\mathbf G\\dot{\\mathbf q}-\\begin{bmatrix}0\\\\0\\\\0\\\\0\\\\\\dot x_d\\end{bmatrix},\\qquad\\mathbf G\\ddot{\\mathbf q}=\\boldsymbol\\gamma,\\quad\\boldsymbol\\gamma=\\begin{bmatrix}0\\\\h\\\\0\\\\0\\\\\\ddot x_d\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "加速度约束第二行的 h 为正，因为上端约束为“绳顶位置 − 小车位置”。该符号可由对位置约束连续求导两次直接核对。",
+          "加速度拘束第 2 行の h は正である。上端拘束を「ロープ上端位置 − トロリ位置」と定義したためであり、位置拘束を 2 回微分すれば直接確認できる。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "15  统一运动方程：质量、力与约束",
+      "15  統一運動方程式：質量・力・拘束"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\boxed{\\ \\mathbf M(\\mathbf q,t)\\ddot{\\mathbf q}+\\mathbf G(\\mathbf q)^{\\mathsf T}\\boldsymbol\\lambda=\\mathbf f(\\mathbf q,\\dot{\\mathbf q},t),\\qquad\\boldsymbol\\Phi(\\mathbf q,t)=\\mathbf0\\ }"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf M=\\begin{bmatrix}\\mathbf H_s&\\mathbf0&\\mathbf0\\\\\\mathbf0&\\mathbf M_c&\\mathbf0\\\\\\mathbf0&\\mathbf0&m_P\\mathbf I_2\\end{bmatrix},\\qquad\\mathbf f=\\begin{bmatrix}\\mathbf f_T\\\\\\mathbf f_J\\\\f_x\\\\\\mathbf F_{g,c}-\\mathbf Q_{\\rm int}-\\mathbf Q_{\\rm ALE}\\\\0\\\\m_Pg\\end{bmatrix}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\boldsymbol\\lambda=\\begin{bmatrix}\\lambda_{AX}&\\lambda_{AY}&\\lambda_{BX}&\\lambda_{BY}&\\lambda_d\\end{bmatrix}^{\\mathsf T},\\quad\\mathbf f_s=\\mathbf F_{g,s}-\\mathbf K_s\\mathbf q_s-\\mathbf C_s\\dot{\\mathbf q}_s+m_T\\mathbf J_A^{\\mathsf T}(\\mathbf g-\\mathbf h_A)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "M 为 n×n，f 为 n×1，Gᵀλ 为 n×1。绳与结构在未约束质量矩阵中不直接交叉，但由 G 强耦合；不能由 M 分块对角得出“系统不耦合”的结论。",
+          "M は n×n、f と Gᵀλ は n×1。非拘束質量行列ではロープと構造に直接の交差項がないが、G により強く連成する。M のブロック対角構造は非連成を意味しない。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "约束力对广义坐标的真实作用为 −Gᵀλ。于是 λA 是绳施加在小车吊点上的力，λB 是绳施加在吊重上的力，驱动广义力为 −λd。相反的力作用在绳端，符合内部作用与反作用。",
+          "一般化座標に作用する実拘束力は −Gᵀλ である。したがって λA はロープがトロリ支持点へ及ぼす力、λB はロープが吊荷へ及ぼす力、駆動一般化力は −λd となる。ロープ端には逆向きの力が作用する。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf H_s\\ddot{\\mathbf q}_s-\\mathbf J_A^{\\mathsf T}\\boldsymbol\\lambda_A+\\mathbf e_x\\lambda_d=\\mathbf f_s,\\quad\\mathbf e_x=(0,\\ldots,0,1)^{\\mathsf T}"
+      }
+    ]
+  },
+  {
+    "title": [
+      "16  求解用鞍点矩阵的完整分块",
+      "16  解法用鞍点行列の全ブロック"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "令 bΦ = γ − 2αΦ̇ − βB²Φ，并按上端 2 行、下端 2 行、驱动 1 行分成 bA、bB、bd。未知量按加速度和乘子分组。",
+          "bΦ = γ − 2αΦ̇ − βB²Φ とし、上端 2 行・下端 2 行・駆動 1 行に bA、bB、bd と分ける。未知量を加速度と乗数に分類する。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\left[\\begin{array}{ccc|ccc}\\mathbf H_s&0&0&-\\mathbf J_A^{\\mathsf T}&0&\\mathbf e_x\\\\0&\\mathbf M_c&0&\\mathbf E_A^{\\mathsf T}&\\mathbf E_B^{\\mathsf T}&0\\\\0&0&m_P\\mathbf I_2&0&-\\mathbf I_2&0\\\\\\hline-\\mathbf J_A&\\mathbf E_A&0&0&0&0\\\\0&\\mathbf E_B&-\\mathbf I_2&0&0&0\\\\\\mathbf e_x^{\\mathsf T}&0&0&0&0&0\\end{array}\\right]\\begin{bmatrix}\\ddot{\\mathbf q}_s\\\\\\ddot{\\mathbf e}\\\\\\ddot{\\mathbf r}_P\\\\\\boldsymbol\\lambda_A\\\\\\boldsymbol\\lambda_B\\\\\\lambda_d\\end{bmatrix}=\\begin{bmatrix}\\mathbf f_s\\\\\\mathbf f_c\\\\m_P\\mathbf g\\\\\\mathbf b_A\\\\\\mathbf b_B\\\\b_d\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "各块行高与列宽依次为 ns、nc、2、2、2、1。零块尺寸由所在行列决定。总矩阵为 (n+5)×(n+5)，对称但不正定；质量正定且 G 满行秩时可逆。",
+          "各ブロックの行高・列幅は ns、nc、2、2、2、1。ゼロブロックの寸法は所属する行・列で決まる。全行列は (n+5)×(n+5) の対称不定行列であり、質量正定値かつ G が行フルランクなら可逆となる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf G\\mathbf M^{-1}\\mathbf G^{\\mathsf T}\\boldsymbol\\lambda=\\mathbf G\\mathbf M^{-1}\\mathbf f-\\mathbf b_\\Phi,\\qquad\\ddot{\\mathbf q}=\\mathbf M^{-1}(\\mathbf f-\\mathbf G^{\\mathsf T}\\boldsymbol\\lambda)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "Schur 补式用于理解乘子的求解关系，代码实际直接解鞍点线性系统，不显式计算逆矩阵。所有负号由 Φ 的定义决定，不可在单个模块中独立改变。",
+          "Schur 補形式は乗数の解法関係を説明するもので、コードでは鞍点連立一次方程式を直接解き、逆行列を明示的には求めない。符号はすべて Φ の定義に従い、単一モジュールだけで変更してはならない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "17  运动方程逐行展开",
+      "17  運動方程式の行ごとの展開"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "以下的 i = 1,…,nT，j = 1,…,nJ，r = 1,…,nc。它们给出全部 n 条动力学行，省略的只是重复的索引范围，并未省略耦合项。",
+          "以下で i = 1,…,nT、j = 1,…,nJ、r = 1,…,nc とする。全 n 本の動力学行を表しており、反復する添字範囲以外の連成項は省略しない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\sum_{k=1}^{n_T}H_{TT,ik}\\ddot\\eta_k+\\sum_{j=1}^{n_J}H_{TJ,ij}\\ddot\\zeta_j+H_{Tx,i}\\ddot x-a_i\\lambda_{AX}-xb_i\\lambda_{AY}=f_{T,i}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\sum_{i=1}^{n_T}H_{TJ,ij}\\ddot\\eta_i+\\sum_{k=1}^{n_J}H_{JJ,jk}\\ddot\\zeta_k+H_{Jx,j}\\ddot x-\\psi_j\\lambda_{AY}=f_{J,j}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\sum_iH_{Tx,i}\\ddot\\eta_i+\\sum_jH_{Jx,j}\\ddot\\zeta_j+H_{xx}\\ddot x-\\lambda_{AX}-d\\lambda_{AY}+\\lambda_d=f_x"
+      },
+      {
+        "type": "eq",
+        "tex": "\\sum_{s=1}^{n_c}(M_c)_{rs}\\ddot e_s+(E_A)_{1r}\\lambda_{AX}+(E_A)_{2r}\\lambda_{AY}+(E_B)_{1r}\\lambda_{BX}+(E_B)_{2r}\\lambda_{BY}=f_{c,r}"
+      },
+      {
+        "type": "eq",
+        "tex": "m_P\\ddot X_P-\\lambda_{BX}=0,\\qquad m_P\\ddot Y_P-\\lambda_{BY}=m_Pg"
+      },
+      {
+        "type": "p",
+        "text": [
+          "绳上端仅 r = 1,2 行含 λA，绳下端仅 r = nc−3,nc−2 行含 λB；端斜率行无直接端反力项。fc,r 由上一节的装配内力、重力和 ALE 向量逐分量相减获得。",
+          "ロープ上端では r = 1,2 行だけが λA、下端では r = nc−3,nc−2 行だけが λB を含む。端勾配行には直接の端力項がない。fc,r は組み立て済み重力・内力・ALE ベクトルの成分差から求める。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "当 θ = 0 且静止时，吊重竖向式给出 λBY = −mPg。此时负号表示绳对吊重的力向上，可作为乘子符号的直观检查。",
+          "θ = 0 の静止時、吊荷の鉛直式から λBY = −mPg となる。負符号はロープが吊荷を上向きに引くことを意味し、乗数符号の直感的な確認になる。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "18  默认 28 行系统与约束行展开",
+      "18  既定 28 行系と拘束行の展開"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}-\\sum_i a_i\\ddot\\eta_i-\\ddot x+\\ddot e_1&=b_{\\Phi,1},\\\\-x\\sum_i b_i\\ddot\\eta_i-\\sum_j\\psi_j\\ddot\\zeta_j-d\\ddot x+\\ddot e_2&=b_{\\Phi,2},\\\\\\ddot e_{n_c-3}-\\ddot X_P&=b_{\\Phi,3},\\\\\\ddot e_{n_c-2}-\\ddot Y_P&=b_{\\Phi,4},\\\\\\ddot x&=b_{\\Phi,5}.\\end{aligned}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "默认 nT = nJ = 2、N = 3，因此 ns = 5、nc = 16、n = 23。28 个未知量含 23 个加速度与 5 个乘子。5 个独立约束使剩余瞬时机械自由度为 18；加速度级积分仍保存 46 个位置/速度状态。",
+          "既定値 nT = nJ = 2、N = 3 では ns = 5、nc = 16、n = 23。未知量 28 個は加速度 23 個と乗数 5 個からなる。独立拘束 5 本により瞬間的機械自由度は 18 だが、加速度レベル積分では位置・速度の 46 状態を保持する。"
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          [
+            "行 / 列编号",
+            "未知量或方程"
+          ],
+          [
+            "行 / 列番号",
+            "未知量または方程式"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "1–2",
+              "η̈₁, η̈₂；塔身动力学"
+            ],
+            [
+              "1–2",
+              "η̈₁, η̈₂；タワー動力学"
+            ]
+          ],
+          [
+            [
+              "3–4",
+              "ζ̈₁, ζ̈₂；臂架动力学"
+            ],
+            [
+              "3–4",
+              "ζ̈₁, ζ̈₂；ジブ動力学"
+            ]
+          ],
+          [
+            [
+              "5",
+              "ẍ；小车坐标动力学"
+            ],
+            [
+              "5",
+              "ẍ；トロリ座標動力学"
+            ]
+          ],
+          [
+            [
+              "6–21",
+              "ë₁…ë₁₆；4 个绳节点的动力学"
+            ],
+            [
+              "6–21",
+              "ë₁…ë₁₆；ロープ 4 節点の動力学"
+            ]
+          ],
+          [
+            [
+              "22–23",
+              "ẌP, ŸP；吊重动力学"
+            ],
+            [
+              "22–23",
+              "ẌP, ŸP；吊荷動力学"
+            ]
+          ],
+          [
+            [
+              "24–25",
+              "λAX, λAY；上端两条加速度约束"
+            ],
+            [
+              "24–25",
+              "λAX, λAY；上端の加速度拘束 2 本"
+            ]
+          ],
+          [
+            [
+              "26–27",
+              "λBX, λBY；下端两条加速度约束"
+            ],
+            [
+              "26–27",
+              "λBX, λBY；下端の加速度拘束 2 本"
+            ]
+          ],
+          [
+            [
+              "28",
+              "λd；小车加速度约束"
+            ],
+            [
+              "28",
+              "λd；トロリ加速度拘束"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "表中列解释为未知量，行解释为相应方程。全局绳顶位置为 q₆,q₇，绳底位置为 q₁₈,q₁₉；最后两个绳坐标 q₂₀,q₂₁ 是端斜率，不是吊重坐标。",
+          "表の列は未知量、行は対応する方程式を示す。全体ロープ上端位置は q₆,q₇、下端位置は q₁₈,q₁₉。最後のロープ座標 q₂₀,q₂₁ は端勾配であり、吊荷座標ではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "19  稳定化、积分与诊断",
+      "19  安定化・積分・診断"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\ddot{\\boldsymbol\\Phi}+2\\alpha\\dot{\\boldsymbol\\Phi}+\\beta_B^2\\boldsymbol\\Phi=\\mathbf0,\\qquad\\mathbf b_\\Phi=\\boldsymbol\\gamma-2\\alpha\\dot{\\boldsymbol\\Phi}-\\beta_B^2\\boldsymbol\\Phi"
+      },
+      {
+        "type": "p",
+        "text": [
+          "Baumgarte 稳定化使数值约束漂移按二阶误差系统衰减。默认 α = βB = 10 s⁻¹。它不能替代一致初值，也不能证明模型物理正确；过大的增益还会加剧刚性。",
+          "Baumgarte 安定化は拘束ドリフトを 2 次誤差系として減衰させる。既定値は α = βB = 10 s⁻¹。一貫した初期値の代わりにはならず、物理モデルの正しさも証明しない。過大ゲインは剛性を強める。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf z=\\begin{bmatrix}\\mathbf q\\\\\\mathbf v\\end{bmatrix},\\qquad\\dot{\\mathbf z}=\\begin{bmatrix}\\mathbf v\\\\\\ddot{\\mathbf q}(t,\\mathbf q,\\mathbf v)\\end{bmatrix}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "代码每次 RHS 调用先求鞍点系统，再由 ode15s 积分一阶状态。理论描述保留位置级 DAE；实际算法不是直接将指数三位置级 DAE 交给积分器，而是加速度级求解加稳定化。",
+          "コードは RHS 評価ごとに鞍点系を解き、ode15s で 1 階状態を積分する。理論記述は位置レベル DAE を保持するが、実際には指数 3 の位置 DAE を直接積分せず、加速度レベル解法と安定化を用いる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "r_p=\\|\\boldsymbol\\Phi\\|_\\infty,\\quad r_v=\\|\\dot{\\boldsymbol\\Phi}\\|_\\infty,\\quad r_d=\\|\\mathbf M\\ddot{\\mathbf q}+\\mathbf G^{\\mathsf T}\\boldsymbol\\lambda-\\mathbf f\\|_\\infty"
+      },
+      {
+        "type": "p",
+        "text": [
+          "rp、rv 分别以 m、m/s 衡量连接和轨迹漂移；rd 是原始混合单位方程的数值残差，其分量含力与广义力矩，未无量纲化。很小的 rd 只说明线性方程解得准确，不能替代 rp、rv 或网格与模态验证。",
+          "rp、rv は接続・軌道ドリフトを m、m/s で測る。rd は無次元化していない混合単位式の残差であり、力と一般化モーメントを含む。小さい rd は連立一次方程式の精度だけを示し、rp、rv や要素・モード検証を代替しない。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "质量正定与 G 的秩检查、有限差分运动学检查、固定域能量检查必须分开进行。所有诊断均受时间采样或积分点采样限制，不代表连续时空上的严格误差上界。",
+          "質量正定値性、G のランク、有限差分運動学、固定領域エネルギーの各検査は分けて行う。診断は時間・積分点のサンプリングに依存し、連続時空の厳密な誤差上限ではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "20  静态初值与平滑驱动",
+      "20  静的初期値と滑らかな駆動"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\mathbf q_b=\\begin{bmatrix}\\boldsymbol\\eta\\\\\\boldsymbol\\zeta\\end{bmatrix},\\qquad\\mathbf K_b\\mathbf q_b=\\mathbf F_{g,b}+(m_T+m_P+\\mu_cL_0)g\\,\\mathbf J_{A,Y,b}^{\\mathsf T}\\big|_{x=x_0}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "先以竖直绳载求结构静挠度，再构造包含绳自重轴向伸长的初始中心线。令 u 从绳顶向下量，为避免与单元局部坐标混淆，本页 u 的单位为 m。",
+          "まず鉛直ロープ荷重で構造静たわみを求め、次にロープ自重による軸伸びを含む初期中心線を作る。本ページの u は上端から下へ測る長さ [m] であり、要素局所座標とは異なる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\ell_a(u)=u+\\frac{m_Pgu+\\mu_cg(L_0u-u^2/2)}{EA},\\qquad\\ell_a^{\\prime}(u)=1+\\frac{m_Pg+\\mu_cg(L_0-u)}{EA}"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf d_0=\\begin{bmatrix}\\sin\\theta_0\\\\\\cos\\theta_0\\end{bmatrix},\\quad\\mathbf r_i=\\mathbf r_A+\\ell_a(u_i)\\mathbf d_0,\\quad\\mathbf r_{s,i}=\\ell_a^{\\prime}(u_i)\\mathbf d_0,\\quad\\dot{\\mathbf q}_0=\\mathbf0"
+      },
+      {
+        "type": "p",
+        "text": [
+          "θ₀ = 0 时为静平衡保持工况；θ₀ = 2° 时是旋转初始绳形后释放，满足位置连接但不是新的斜绳静平衡。绳的二次轴向场可由三次 Hermite 插值表示。",
+          "θ₀ = 0 は静的平衡保持ケースである。θ₀ = 2° は初期ロープ形状を回転して放すケースであり、位置接続は満たすが斜めロープの新しい静的平衡ではない。二次の軸方向場は三次 Hermite 補間で表現できる。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "S(\\tau)=10\\tau^3-15\\tau^4+6\\tau^5,\\quad\\tau=\\min(1,\\max(0,(t-t_0)/T))"
+      },
+      {
+        "type": "eq",
+        "tex": "x_d=x_0+(x_1-x_0)S(\\tau_x),\\qquad L=L_0+(L_1-L_0)S(\\tau_L)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "该五次轨迹在起止处速度与加速度为零。默认小车 1–5 s 从 2 m 移至 2.4 m，绳在 2–8 s 从 2 m 收短至 1.4 m。L 为未伸长材料长度，不是实际弧长。",
+          "この 5 次軌道は始終端で速度・加速度ゼロとなる。既定ケースではトロリが 1–5 s に 2 m から 2.4 m へ移動し、ロープは 2–8 s に 2 m から 1.4 m へ短縮する。L は未伸長材料長であり、実弧長ではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "21  参数、输出与力的解释",
+      "21  パラメータ・出力・力の解釈"
+    ],
+    "items": [
+      {
+        "type": "table",
+        "headers": [
+          [
+            "参数",
+            "默认值"
+          ],
+          [
+            "パラメータ",
+            "既定値"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "H / B；μT / μJ",
+              "4 / 3 m；12 / 8 kg/m"
+            ],
+            [
+              "H / B；μT / μJ",
+              "4 / 3 m；12 / 8 kg/m"
+            ]
+          ],
+          [
+            [
+              "EIT / EIJ；ν",
+              "80000 / 30000 N·m²；0.01"
+            ],
+            [
+              "EIT / EIJ；ν",
+              "80000 / 30000 N·m²；0.01"
+            ]
+          ],
+          [
+            [
+              "mT / mP；μc",
+              "20 / 5 kg；0.1 kg/m"
+            ],
+            [
+              "mT / mP；μc",
+              "20 / 5 kg；0.1 kg/m"
+            ]
+          ],
+          [
+            [
+              "EA / EIc；g",
+              "20000 N / 0.02 N·m²；9.81 m/s²"
+            ],
+            [
+              "EA / EIc；g",
+              "20000 N / 0.02 N·m²；9.81 m/s²"
+            ]
+          ],
+          [
+            [
+              "nT / nJ / N",
+              "2 / 2 / 3"
+            ],
+            [
+              "nT / nJ / N",
+              "2 / 2 / 3"
+            ]
+          ],
+          [
+            [
+              "终止时刻 / 输出点数",
+              "10 s / 501"
+            ],
+            [
+              "終了時刻 / 出力点数",
+              "10 s / 501"
+            ]
+          ],
+          [
+            [
+              "相对 / 绝对容差；最大步长",
+              "2×10⁻⁷ / 10⁻⁹；0.02 s"
+            ],
+            [
+              "相対 / 絶対許容誤差；最大刻み",
+              "2×10⁻⁷ / 10⁻⁹；0.02 s"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "u_H=\\mathbf a\\boldsymbol\\eta,\\qquad v_B=B\\mathbf b\\boldsymbol\\eta+\\boldsymbol\\psi(B)\\boldsymbol\\zeta,\\qquad\\theta=\\operatorname{atan2}(X_P-X_A,Y_P-Y_A)"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf F_{\\rm support}=\\boldsymbol\\lambda_A,\\quad\\mathbf F_{P}=\\boldsymbol\\lambda_B,\\quad Q_x^{\\rm drive}=-\\lambda_d,\\quad P_x^{\\rm drive}=-\\lambda_d\\dot x_d"
+      },
+      {
+        "type": "p",
+        "text": [
+          "θ 是端点弦线相对向下竖直的摆角，不是每处绳切线角；support 指绳对吊点的力，不是塔根地基反力。驱动力与坐标 x 共轭，不应未经投影解释为全局水平力。",
+          "θ は下向き鉛直に対する端点弦線角であり、各点の接線角ではない。support はロープから支持点への力で、タワー基礎反力ではない。駆動力は x に共役な一般化力であり、投影なしに全体水平力と解釈してはならない。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "旧接口中的 kB、cB、forceAmplitude 不进入当前连续梁模型力方程。示例参数未校准到实际塔吊，仿真值仅用于模型和数值方法展示。",
+          "旧インターフェースの kB、cB、forceAmplitude は現連続はりモデルの力式には入らない。例示値は実塔クレーンへ校正されておらず、モデルと数値法の説明に用いる。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "22  能量与默认仿真结果",
+      "22  エネルギーと既定解析結果"
+    ],
+    "items": [
+      {
+        "type": "eq",
+        "tex": "\\begin{aligned}T={}&\\tfrac12\\dot{\\mathbf q}_s^{\\mathsf T}\\mathbf M_s\\dot{\\mathbf q}_s+\\tfrac12m_T\\|\\mathbf J_A\\dot{\\mathbf q}_s\\|^2+\\tfrac12m_P\\|\\dot{\\mathbf r}_P\\|^2\\\\&+\\sum_k\\tfrac12\\int_{s_1}^{s_2}\\mu_c\\|\\mathbf N\\dot{\\mathbf e}^{(k)}+\\mathbf N_t\\mathbf e^{(k)}\\|^2ds,\\\\V={}&U_s+\\sum_kU^{(k)}-\\mathbf F_{g,s}^{\\mathsf T}\\mathbf q_s-m_TgY_A-\\mathbf F_{g,c}^{\\mathsf T}\\mathbf e-m_PgY_P.\\end{aligned}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "固定小车、固定材料域且 ν = 0 时，用 E = T + V 的保持检查保守性。存在阻尼、规定驱动或收放绳时，不应要求 E 恒定。默认 10 s 算例最大摆角 2.116461°，采样最小轴向力 48.470858 N，最大位置约束误差 6.199×10⁻¹² m。",
+          "トロリ固定・材料領域固定・ν = 0 では E = T + V の保持で保存性を検査する。減衰、指定駆動、巻上げがある場合は E 一定を要求しない。既定 10 s ケースの最大角は 2.116461°、評価点最小軸力は 48.470858 N、最大位置拘束誤差は 6.199×10⁻¹² m。"
+        ]
+      },
+      {
+        "type": "img",
+        "path": "/Users/hesong/Desktop/TowerCrane-OptimalControl/report/continuum/simulation.png",
+        "text": [
+          "默认两阶梁 / 三段绳算例。图中结构曲线减去初始值；并非全部为绝对位移。",
+          "既定の各はり 2 次・ロープ 3 要素ケース。構造曲線は初期値を差し引いており、絶対変位ではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "23  独立静态解：不使用模态矩阵",
+      "23  独立静解：モード行列を使用しない"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "固定小车位置 a₀ 和绳长 L，令绳竖直。通过连续梁积分建立独立基准，不用同一套 K 矩阵生成“参考解”。点荷载 P 包括小车、吊重与绳自重。",
+          "トロリ位置 a₀ とロープ長 L を固定してロープを鉛直とする。同じ K 行列を参考解生成に使わず、連続はりの積分による独立基準を作る。集中荷重 P はトロリ・吊荷・ロープ自重を含む。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "P=(m_T+m_P+\\mu_cL)g,\\qquad w=\\mu_Jg,\\qquad M_0=\\frac{wB^2}{2}+Pa_0"
+      },
+      {
+        "type": "eq",
+        "tex": "u_T(z)=\\frac{M_0z^2}{2EI_T},\\qquad\\vartheta_H=\\frac{M_0H}{EI_T}"
+      },
+      {
+        "type": "eq",
+        "tex": "v_w(\\xi)=\\frac{w\\xi^2(6B^2-4B\\xi+\\xi^2)}{24EI_J},\\qquad v_P(\\xi)=\\begin{cases}\\dfrac{P\\xi^2(3a_0-\\xi)}{6EI_J},&\\xi\\le a_0,\\\\\\dfrac{Pa_0^2(3\\xi-a_0)}{6EI_J},&\\xi>a_0.\\end{cases}"
+      },
+      {
+        "type": "eq",
+        "tex": "v_J^{\\rm abs}(\\xi)=\\xi\\vartheta_H+v_w(\\xi)+v_P(\\xi)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "塔身受臂架传递的端弯矩，因此解析塔顶侧移为正。工况 1：a₀ = 2 m、L = 2 m；工况 2：a₀ = 2.4 m、L = 1.4 m。工况 2 是独立静平衡，不是把动态终点当作静态解。",
+          "タワーにはジブから端モーメントが伝わるため、解析頂部横変位は正となる。ケース 1 は a₀ = 2 m、L = 2 m、ケース 2 は a₀ = 2.4 m、L = 1.4 m。ケース 2 は独立した静的平衡であり、動的終点を静解と見なしたものではない。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "e_{\\rm rel}=100\\frac{|y_N-y_*|}{|y_*|},\\qquad e_{\\rm field}=\\max_{\\xi\\in\\mathcal X}|y_N(\\xi)-y_*(\\xi)|"
+      },
+      {
+        "type": "p",
+        "text": [
+          "每根梁使用 501 个空间点检查全场，模态数为 1、2、3、4、6、8、12、16。符号验证与幅值收敛分别报告。",
+          "各はりを 501 空間点で評価し、モード数 1、2、3、4、6、8、12、16 を比較する。符号検証と振幅収束は分けて報告する。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "24  静态收敛结果与原因",
+      "24  静的収束結果と解釈"
+    ],
+    "items": [
+      {
+        "type": "table",
+        "headers": [
+          [
+            "N",
+            "塔顶位移 %",
+            "塔顶转角 %",
+            "臂端 %：工况 1 / 2"
+          ],
+          [
+            "N",
+            "頂部変位 %",
+            "頂部回転 %",
+            "ジブ端 %：ケース 1 / 2"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "1",
+              "10.9228",
+              "38.6924",
+              "24.9475 / 24.7260"
+            ],
+            [
+              "1",
+              "10.9228",
+              "38.6924",
+              "24.9475 / 24.7260"
+            ]
+          ],
+          [
+            [
+              "2",
+              "3.0454",
+              "19.8624",
+              "13.0844 / 12.7248"
+            ],
+            [
+              "2",
+              "3.0454",
+              "19.8624",
+              "13.0844 / 12.7248"
+            ]
+          ],
+          [
+            [
+              "3",
+              "1.3959",
+              "13.3891",
+              "8.8634 / 8.5890"
+            ],
+            [
+              "3",
+              "1.3959",
+              "13.3891",
+              "8.8634 / 8.5890"
+            ]
+          ],
+          [
+            [
+              "4",
+              "0.7941",
+              "10.0804",
+              "6.6815 / 6.4804"
+            ],
+            [
+              "4",
+              "0.7941",
+              "10.0804",
+              "6.6815 / 6.4804"
+            ]
+          ],
+          [
+            [
+              "6",
+              "0.3559",
+              "6.7393",
+              "4.4601 / 4.3377"
+            ],
+            [
+              "6",
+              "0.3559",
+              "6.7393",
+              "4.4601 / 4.3377"
+            ]
+          ],
+          [
+            [
+              "8",
+              "0.2008",
+              "5.0595",
+              "3.3485 / 3.2560"
+            ],
+            [
+              "8",
+              "0.2008",
+              "5.0595",
+              "3.3485 / 3.2560"
+            ]
+          ],
+          [
+            [
+              "12",
+              "0.0894",
+              "3.3754",
+              "2.2341 / 2.1715"
+            ],
+            [
+              "12",
+              "0.0894",
+              "3.3754",
+              "2.2341 / 2.1715"
+            ]
+          ],
+          [
+            [
+              "16",
+              "0.0503",
+              "2.5322",
+              "1.6761 / 1.6292"
+            ],
+            [
+              "16",
+              "0.0503",
+              "2.5322",
+              "1.6761 / 1.6292"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "两工况塔顶位移与转角的相对误差相同，因为在线性静力模型中仅改变载荷幅值。16 阶塔顶位移误差 0.050344%，但转角 2.53221%、臂端总挠度 1.63–1.68%，后两项未达到 1%。",
+          "両ケースで頂部変位・回転の相対誤差が等しいのは、線形静力モデルでは荷重振幅だけが変わるためである。16 次の頂部変位誤差は 0.050344% だが、回転は 2.53221%、ジブ端総たわみは 1.63–1.68% であり、後二者は 1% 未達である。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "端弯矩静解的塔顶曲率非零，而选取的每个自由端振型在顶端曲率为零。这不妨碍弱意义下位移收敛，却使导数与刚体转动贡献收敛较慢。已有数据中位移约二阶、转角和臂端约一阶；不能据此推断所有动态量的收敛阶。",
+          "端モーメント静解の頂部曲率は非ゼロだが、採用した自由端モードは頂部曲率ゼロである。弱い意味での変位収束は可能でも、微分量と剛体回転寄与の収束は遅くなる。既存データでは変位がおよそ 2 次、回転・ジブ端がおよそ 1 次だが、全動的量の収束次数を意味しない。"
+        ]
+      },
+      {
+        "type": "img",
+        "path": "/Users/hesong/Desktop/TowerCrane-OptimalControl/report/continuum/structure_validation_corrected/independent_static_fields.png",
+        "text": [
+          "16 阶静态全场对照；曲线接近不等于转角误差已小于 1%。",
+          "16 次の静的全場比較。曲線が近くても回転誤差 1% 以下を意味しない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "25  动态模态比较：误差如何定义",
+      "25  動的モード比較：差異の定義"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "固定绳单元数为 6，仅改变每根梁的模态数 4、6、8、12。这里“固定”指单元数固定，绳长仍按规定轨迹变化。积分区间 0–10 s，输出 2001 点，相对/绝对容差 2×10⁻⁸ / 10⁻¹⁰，最大步长 0.01 s。",
+          "ロープ要素数を 6 に固定し、各はりのモード数だけを 4、6、8、12 と変える。「固定」は要素数を指し、ロープ長は指定軌道に従って変化する。積分区間 0–10 s、出力 2001 点、相対・絶対許容誤差 2×10⁻⁸ / 10⁻¹⁰、最大刻み 0.01 s。"
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "\\Delta_\\infty=\\max_k|y_N(t_k)-y_{N^+}(t_k)|,\\qquad e_\\infty=100\\frac{\\Delta_\\infty}{\\max(\\max_k|y_{N^+}(t_k)|,10^{-12})}"
+      },
+      {
+        "type": "eq",
+        "tex": "e_2=100\\frac{\\left(\\sum_k|y_N(t_k)-y_{N^+}(t_k)|^2\\right)^{1/2}}{\\max\\left(\\left(\\sum_k|y_{N^+}(t_k)|^2\\right)^{1/2},10^{-12}\\right)}"
+      },
+      {
+        "type": "eq",
+        "tex": "y_{\\rm vib}(t)=y(t)-y_{\\rm static}(x(t),L(t)),\\qquad y_{\\rm default\\ plot}(t)=y(t)-y(0)"
+      },
+      {
+        "type": "p",
+        "text": [
+          "动态验证中的“振动分量”扣除同阶模型在当前 x、L 下的准静态值；默认时程图则只扣除初值，二者不可混淆。验证对象为总位移、振动分量、摆角、两个吊点力分量及小车广义驱动力。",
+          "動的検証の「振動成分」は同次数モデルの現在 x、L における準静的値を差し引く。既定時系列図は初期値だけを差し引くため、両者を混同しない。対象は総変位、振動成分、角度、支持点力 2 成分、トロリ一般化駆動力である。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "工作判据：总位移、摆角和力采用 e∞ ≤ 1%；振动分量采用 e∞ ≤ 5%。e₂ 仅供参考。高阶解不是精确解，因此只能称相邻模型差异；阶数间隔也不同，不宜直接用三点拟合收敛阶。",
+          "作業上の判定基準は総変位・角度・力で e∞ ≤ 1%、振動成分で e∞ ≤ 5%。e₂ は参考値である。高次解は厳密解ではないため、隣接モデル間差異と呼ぶ。次数間隔も異なり、3 点から単純に収束次数を推定すべきではない。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "26  动态比较结果与未通过项目",
+      "26  動的比較結果と未達項目"
+    ],
+    "items": [
+      {
+        "type": "table",
+        "headers": [
+          [
+            "量",
+            "4→6 %",
+            "6→8 %",
+            "8→12 %",
+            "判据 %"
+          ],
+          [
+            "量",
+            "4→6 %",
+            "6→8 %",
+            "8→12 %",
+            "基準 %"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "塔顶总位移",
+              "0.5402",
+              "0.2085",
+              "0.1635",
+              "1"
+            ],
+            [
+              "頂部総変位",
+              "0.5402",
+              "0.2085",
+              "0.1635",
+              "1"
+            ]
+          ],
+          [
+            [
+              "臂端总位移",
+              "2.3085",
+              "1.1522",
+              "1.1395",
+              "1"
+            ],
+            [
+              "ジブ端総変位",
+              "2.3085",
+              "1.1522",
+              "1.1395",
+              "1"
+            ]
+          ],
+          [
+            [
+              "塔顶振动",
+              "5.5334",
+              "2.7040",
+              "2.6397",
+              "5"
+            ],
+            [
+              "頂部振動",
+              "5.5334",
+              "2.7040",
+              "2.6397",
+              "5"
+            ]
+          ],
+          [
+            [
+              "臂端振动",
+              "6.7689",
+              "3.3743",
+              "3.2200",
+              "5"
+            ],
+            [
+              "ジブ端振動",
+              "6.7689",
+              "3.3743",
+              "3.2200",
+              "5"
+            ]
+          ],
+          [
+            [
+              "摆角",
+              "0.2692",
+              "0.1215",
+              "0.1157",
+              "1"
+            ],
+            [
+              "振れ角",
+              "0.2692",
+              "0.1215",
+              "0.1157",
+              "1"
+            ]
+          ],
+          [
+            [
+              "吊点水平力",
+              "0.2338",
+              "0.1141",
+              "0.1127",
+              "1"
+            ],
+            [
+              "支持点水平力",
+              "0.2338",
+              "0.1141",
+              "0.1127",
+              "1"
+            ]
+          ],
+          [
+            [
+              "吊点竖向力",
+              "0.1721",
+              "0.0850",
+              "0.0876",
+              "1"
+            ],
+            [
+              "支持点鉛直力",
+              "0.1721",
+              "0.0850",
+              "0.0876",
+              "1"
+            ]
+          ],
+          [
+            [
+              "驱动力",
+              "2.6320",
+              "1.3119",
+              "1.2987",
+              "1"
+            ],
+            [
+              "駆動力",
+              "2.6320",
+              "1.3119",
+              "1.2987",
+              "1"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "8→12 阶共 6/8 项通过。臂端总位移 1.139460%、驱动力 1.298716%，未满足 1%；继续增加模态或加入合适静态修正基后，还需重新验证。不能以摆角收敛较快替代结构挠度或驱动力收敛。",
+          "8→12 次では 6/8 項目が基準内。ジブ端総変位 1.139460%、駆動力 1.298716% は 1% 未達である。モード追加または適切な静的補正基底導入後に再検証が必要となる。角度の速い収束で構造たわみ・駆動力の収束を代替できない。"
+        ]
+      },
+      {
+        "type": "img",
+        "path": "/Users/hesong/Desktop/TowerCrane-OptimalControl/report/continuum/structure_validation_corrected/convergence.png",
+        "text": [
+          "总位移、振动、摆角与静态误差曲线。完整分项曲线另见误差曲线 PDF。",
+          "総変位・振動・角度・静的誤差。各項目の詳細曲線は別冊の誤差曲線 PDF に収録。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "27  独立回归验证与证据边界",
+      "27  独立回帰検証と証拠の範囲"
+    ],
+    "items": [
+      {
+        "type": "table",
+        "headers": [
+          [
+            "检查",
+            "结果与含义"
+          ],
+          [
+            "検査",
+            "結果と意味"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "刚接切线",
+              "归一化内积约 2×10⁻¹³，正交性通过。"
+            ],
+            [
+              "剛接接線",
+              "正規化内積は約 2×10⁻¹³。直交性を確認。"
+            ]
+          ],
+          [
+            [
+              "高阶积分",
+              "16 阶独立 96 点积分：质量 / 刚度相对误差 7.773×10⁻¹⁵ / 7.487×10⁻¹⁵。"
+            ],
+            [
+              "高次積分",
+              "16 次を独立な 96 点積分で確認。質量 / 剛性相対誤差 7.773×10⁻¹⁵ / 7.487×10⁻¹⁵。"
+            ]
+          ],
+          [
+            [
+              "静平衡",
+              "最大状态导数范数 4.658×10⁻⁹；质量正定、约束秩为 5。"
+            ],
+            [
+              "静的平衡",
+              "最大状態微分ノルム 4.658×10⁻⁹。質量正定値、拘束ランク 5。"
+            ]
+          ],
+          [
+            [
+              "孤立塔身频率",
+              "第一频率 2.85565194 Hz，与解析梁公式一致。"
+            ],
+            [
+              "単独タワー固有値",
+              "第 1 固有振動数 2.85565194 Hz。解析はり式と一致。"
+            ]
+          ],
+          [
+            [
+              "固定域能量",
+              "2 s 无阻尼算例能量漂移 9.905×10⁻¹² J。"
+            ],
+            [
+              "固定領域エネルギー",
+              "2 s 無減衰ケースの変動 9.905×10⁻¹² J。"
+            ]
+          ],
+          [
+            [
+              "时间 / 绳网格",
+              "6 s 工况摆角差：收紧容差 1.976×10⁻¹¹ rad；3/6 单元 4.914×10⁻⁸ rad。"
+            ],
+            [
+              "時間 / ロープ分割",
+              "6 s ケース角度差：許容誤差厳格化 1.976×10⁻¹¹ rad、3/6 要素 4.914×10⁻⁸ rad。"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "eq",
+        "tex": "f_{T,1}=\\frac{\\beta_1^2}{2\\pi H^2}\\sqrt{\\frac{EI_T}{\\mu_T}},\\qquad \\mathbf Z^{\\mathsf T}\\mathbf K_{\\rm tan}\\mathbf Z\\mathbf u=\\omega^2\\mathbf Z^{\\mathsf T}\\mathbf M\\mathbf Z\\mathbf u,\\quad\\mathbf G\\mathbf Z=0"
+      },
+      {
+        "type": "eq",
+        "tex": "\\mathbf K_{\\rm tan}=\\left.\\frac{\\partial[-\\mathbf f(\\mathbf q,\\mathbf0,t)+\\mathbf G(\\mathbf q)^{\\mathsf T}\\boldsymbol\\lambda_*]}{\\partial\\mathbf q}\\right|_{\\mathbf q=\\mathbf q_*},\\qquad\\mathbf Z\\in\\mathbb R^{n\\times(n-5)}"
+      },
+      {
+        "type": "p",
+        "text": [
+          "加载平衡点的前六个耦合频率为 0.3518812、1.0669485、2.7683818、5.6120074、7.5514795、11.2098846 Hz。它们来自载荷与约束反力一致线性化，不等于孤立梁频率。",
+          "負荷平衡点の連成固有振動数は 0.3518812、1.0669485、2.7683818、5.6120074、7.5514795、11.2098846 Hz。荷重と拘束反力を整合的に線形化した値で、単独はり固有値とは異なる。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "通过回归阈值不代表局部应力、全部模态或真实系统已验证。当前无实机实验对照，无变长开放域完整功率流验证；对应用范围的结论应限定在上述模型与算例。",
+          "回帰基準の通過は局所応力・全モード・実機の検証完了を意味しない。実機実験との照合および可変長開放領域の完全な動力収支検証は未実施であり、結論は上記モデル・ケースに限定する。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "28  复现流程与文件对应",
+      "28  再現手順とファイル対応"
+    ],
+    "items": [
+      {
+        "type": "code",
+        "text": "addpath('matlab');\nout = tower_crane_continuum_ancf;\naudit_continuum_connection;\ntest_continuum_high_modes;\ntest_continuum_ancf;\nresult = validate_continuum_structure;\nplot_continuum_static_validation;\nsummarize_continuum_sign_fix;"
+      },
+      {
+        "type": "p",
+        "text": [
+          "验证环境为 MATLAB R2026a，使用基础 MATLAB 功能。默认入口与验证入口使用不同的阶数、网格和容差，比较结果时必须同时说明参数，不可只比较文件名。",
+          "検証環境は MATLAB R2026a であり、基本機能を使用する。既定実行と検証ではモード数・分割・許容誤差が異なるため、結果比較時はファイル名だけでなく条件を明示する。"
+        ]
+      },
+      {
+        "type": "table",
+        "headers": [
+          [
+            "代码路径（matlab/ 下）",
+            "对应内容"
+          ],
+          [
+            "コードパス（matlab/ 以下）",
+            "対応内容"
+          ]
+        ],
+        "rows": [
+          [
+            [
+              "+continuum/modes.m, setup.m",
+              "连续基函数、梁积分与矩阵。"
+            ],
+            [
+              "+continuum/modes.m, setup.m",
+              "連続基底・はり積分・行列。"
+            ]
+          ],
+          [
+            [
+              "+continuum/point.m",
+              "小车位置、雅可比、对流项。"
+            ],
+            [
+              "+continuum/point.m",
+              "トロリ位置・ヤコビアン・対流項。"
+            ]
+          ],
+          [
+            [
+              "+aleancf/shape.m, geometry.m, element.m",
+              "绳插值、材料导数、单元质量与内力。"
+            ],
+            [
+              "+aleancf/shape.m, geometry.m, element.m",
+              "ロープ補間・材料微分・要素質量と内力。"
+            ]
+          ],
+          [
+            [
+              "+continuum/assemble.m, rhs.m",
+              "统一矩阵、约束与鞍点求解。"
+            ],
+            [
+              "+continuum/assemble.m, rhs.m",
+              "統一行列・拘束・鞍点解法。"
+            ]
+          ],
+          [
+            [
+              "+continuum/initial_state.m, simulate.m",
+              "一致初值、积分、事件与诊断。"
+            ],
+            [
+              "+continuum/initial_state.m, simulate.m",
+              "整合初期値・積分・イベント・診断。"
+            ]
+          ]
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "验证缓存检查主要源码和参数一致性，但不能覆盖所有间接依赖。修改绳单元、输入轨迹等间接依赖后，应移走或清理对应缓存再计算，避免旧结果混入。历史结果与修正后结果分别保存在独立目录。",
+          "検証キャッシュは主要ソースとパラメータを照合するが、全間接依存を網羅しない。ロープ要素や入力軌道などを変更したら、対応キャッシュを移動または削除して再計算し、旧結果の混入を避ける。履歴と修正後結果は別ディレクトリに保存する。"
+        ]
+      }
+    ]
+  },
+  {
+    "title": [
+      "29  证据索引与后续研究",
+      "29  証拠索引と今後の研究"
+    ],
+    "items": [
+      {
+        "type": "p",
+        "text": [
+          "本书中的实现事实来自当前工作区源码；数值来自已完成的修正后结果文件。此处给出可检查的内部来源，不以外部文献替代对实际代码的核对。",
+          "本書の実装記述は現ワークスペースのソース、数値は実施済み修正後結果に基づく。以下に検査可能な内部資料を示し、外部文献を実コードとの照合の代用にはしない。"
+        ]
+      },
+      {
+        "type": "code",
+        "text": "report/continuum/structure_validation_corrected/\n  connection_sign_audit.csv\n  static_validation.csv\n  static_fields_case1.csv / static_fields_case2.csv\n  dynamic_validation.csv\n  dynamic_diagnostics.csv\n  regression/validation.txt\n  high_modes_validation.txt\n  model_source_sha256.json\n  model_snapshot/\nreport/continuum/\n  simulation.mat / history.csv\noutput/pdf/continuum_error_convergence_zh.pdf"
+      },
+      {
+        "type": "p",
+        "text": [
+          "下一步优先解决结构静态转角与臂端挠度的慢收敛：增加静态修正函数或选择适合端弯矩的 Ritz 基，并重复质量、刚度、独立静解与动态差异检查。增加基函数时应保持独立性，避免重复刚体运动项。",
+          "次の優先課題は静的頂部回転とジブ端たわみの遅い収束である。静的補正関数または端モーメントに適した Ritz 基底を追加し、質量・剛性・独立静解・動的差異を再検査する。基底追加時には独立性を保ち、剛体運動項の重複を避ける。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "再往后可开展实验参数辨识、弹性基础、卷扬动力学与开放系统功率审计。最优控制需要明确优化目标、约束与执行器模型，不能只把现有规定轨迹称作最优控制结果。",
+          "その後の課題は実験パラメータ同定、弾性基礎、巻上げ動力学、開放系の動力収支である。最適制御には目的関数・制約・アクチュエータモデルの定義が必要であり、既存の指定軌道を最適制御結果とは呼べない。"
+        ]
+      },
+      {
+        "type": "p",
+        "text": [
+          "本版结论：刚接符号及数值实现已通过所列检查；结构模态精度尚未全部达到工作判据。这两项结论同时成立，报告时应一并说明。",
+          "本版の結論：剛接符号と数値実装は記載した検査を通過したが、構造モード精度の全項目が作業基準を満たしたわけではない。両者は両立する結論であり、報告時には併記する。"
+        ]
+      }
+    ]
+  }
+]
