@@ -1,0 +1,2 @@
+Meshes: 3/6/9/12; reference: 12 elements
+Completed simulations only; not experimental validation. Near-ideal frequencies are sensitive to finite-difference linearization.

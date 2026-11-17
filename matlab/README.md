@@ -66,3 +66,35 @@ plot_continuum_static_validation;
 ```
 
 完整动态验证可能耗时较长。绘图和修正前后汇总依赖已有结果，先运行对应分析；`summarize_continuum_sign_fix` 同时需要历史验证结果。历史快照和报告保留在 `report/`，其中的旧路径和运行命令记录当时的目录结构，现行操作以本指南为准。
+
+## 刚性梁 / 柔性梁同工况对照
+
+```matlab
+test_rigid_continuum;
+result = compare_rigid_flexible;
+```
+
+采用当前默认两阶/梁、三个 ALE-ANCF 吊索单元和完整 10 秒工况。
+刚性模型令 `nTower=nJib=0`，精确去除弹性自由度，未通过增大刚度近似。
+输出在 `report/rigid_flexible/`，包含时程、误差图、指标、约束检查及完整 MAT 状态。
+
+## 两阶柔性梁下单摆 / ALE-ANCF 对照
+
+```matlab
+test_singlepend;
+compare_singlepend_aleancf;
+```
+
+单摆保留分布绳质量及收放绳惯性，仅约束绳为不可伸长直线、保留一个摆角自由度。
+结果及适用性说明在 `report/singlepend_aleancf/`。
+
+## 快速收绳对照
+
+```matlab
+analyze_fast_hoist;                 % 1.5 s、0.75 s 完成同样 0.6 m 收绳
+check_fast_hoist_resolution;        % 0.75 s 工况六单元吊索及更严格积分精度
+summarize_fast_hoist;               % 与原 6 s 工况汇总比较
+```
+
+全部保留塔身、吊臂各两阶。汇总依赖 `report/singlepend_aleancf/comparison.mat`
+中的原工况结果；输出在 `report/fast_hoist/`。

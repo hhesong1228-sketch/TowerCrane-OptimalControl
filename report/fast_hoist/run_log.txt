@@ -1,0 +1,28 @@
+Running hoist duration 1.500 s, peak speed 0.750 m/s, peak acceleration 1.540 m/s^2
+         quantity           unit      ALE_peak_abs    single_peak_abs    max_abs_difference    rms_difference
+    ___________________    _______    ____________    _______________    __________________    ______________
+
+    {'payload_x'      }    {'m'  }         2.521           2.5213            0.00099167          0.00048451  
+    {'payload_y_down' }    {'m'  }         2.113           2.1077             0.0058057           0.0039816  
+    {'swing'          }    {'rad'}      0.036944         0.036924            0.00071074          0.00034058  
+    {'tower_top'      }    {'m'  }      0.094813         0.094751            8.8859e-05          3.9754e-05  
+    {'jib_tip'        }    {'m'  }       0.19673          0.19669            0.00016816          6.6052e-05  
+    {'support_force_x'}    {'N'  }        1.8821           1.8664               0.08348            0.028169  
+    {'support_force_y'}    {'N'  }        59.986           59.107                2.1384              1.2093  
+    {'drive_force'    }    {'N'  }        23.218           23.205               0.22602            0.077165  
+
+Single constraint 1.138e-10, equation residual 6.883e-15
+Running hoist duration 0.750 s, peak speed 1.500 m/s, peak acceleration 6.158 m/s^2
+         quantity           unit      ALE_peak_abs    single_peak_abs    max_abs_difference    rms_difference
+    ___________________    _______    ____________    _______________    __________________    ______________
+
+    {'payload_x'      }    {'m'  }        2.5405           2.5405              0.001225          0.00050721  
+    {'payload_y_down' }    {'m'  }        2.1125           2.1072              0.008493           0.0040148  
+    {'swing'          }    {'rad'}      0.049908         0.049714             0.0011283           0.0004275  
+    {'tower_top'      }    {'m'  }       0.11226          0.11179            0.00073993          0.00030209  
+    {'jib_tip'        }    {'m'  }       0.22239          0.22175             0.0013268            0.000495  
+    {'support_force_x'}    {'N'  }        3.0252           2.5809               0.58622              0.1855  
+    {'support_force_y'}    {'N'  }        90.034           82.807                12.949              7.5021  
+    {'drive_force'    }    {'N'  }        44.018           43.226                1.8252             0.65854  
+
+Single constraint 1.138e-10, equation residual 4.263e-14

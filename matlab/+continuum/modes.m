@@ -1,7 +1,7 @@
 function [P,D,DD]=modes(x,L,n)
 % Tip-normalized unloaded cantilever modes. Stable exponential evaluation.
 % cosh(z)-sigma*sinh(z) is evaluated without subtracting large numbers.
-assert(n>=1 && n<=16 && n==fix(n),'Use 1 to 16 modes per beam.');
+assert(n>=0 && n<=16 && n==fix(n),'Use 0 (rigid) to 16 modes per beam.');
 persistent roots
 if isempty(roots)
  roots=zeros(1,16);
